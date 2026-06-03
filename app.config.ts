@@ -8,19 +8,18 @@ import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig({
   tanstackStart: {
-    // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
-    // nitro/vite builds from this
     server: { entry: "server" },
   },
   nitro: {
-    // Change deployment target from Cloudflare (default) to Vercel
     preset: "vercel",
-  },
-  vite: {
-    build: {
-      rollupOptions: {
-        external: ["node:async_hooks"],
-      },
+    // Tell Nitro's Rollup bundler to treat node:async_hooks as external
+    // instead of trying to bundle it into the client output
+    externals: {
+      inline: [],
+      external: ["node:async_hooks", "async_hooks"],
+    },
+    rollupConfig: {
+      external: ["node:async_hooks", "async_hooks"],
     },
   },
 });
