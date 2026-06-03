@@ -6,20 +6,4 @@
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
-export default defineConfig({
-  tanstackStart: {
-    server: { entry: "server" },
-  },
-  nitro: {
-    preset: "vercel",
-    // Tell Nitro's Rollup bundler to treat node:async_hooks as external
-    // instead of trying to bundle it into the client output
-    externals: {
-      inline: [],
-      external: ["node:async_hooks", "async_hooks"],
-    },
-    rollupConfig: {
-      external: ["node:async_hooks", "async_hooks"],
-    },
-  },
-});
+export default defineConfig({});
