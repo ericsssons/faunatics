@@ -4,15 +4,16 @@ import {
   Star, Sparkles, ShoppingBag, Leaf, ArrowRight, Menu, X,
 } from "lucide-react";
 import { useState } from "react";
-import heroStore from "@/assets/hero-store.jpg";
-import productFood from "@/assets/product-food.jpg";
-import productCare from "@/assets/product-care.jpg";
-import productToys from "@/assets/product-toys.jpg";
 
 const PHONE = "654 10 82 09";
 const PHONE_TEL = "+34654108209";
 const MAPS_URL = "https://www.google.com/maps/place/Faun%C3%A0tics+Reus/@41.1507486,1.0934748,14.5z/data=!4m6!3m5!1s0x12a151cb895593d9:0x93c36c07d61beab8!8m2!3d41.1588712!4d1.0733441!16s%2Fg%2F11c58241nt?entry=ttu&g_ep=EgoyMDI2MDUzMS4wIKXMDSoASAFQAw%3D%3D";
 const INSTAGRAM = "https://www.instagram.com/faunatics_/?hl=es";
+
+const heroStore = "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=1920&q=80";
+const productFood = "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=1024&q=80";
+const productCare = "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=1024&q=80";
+const productToys = "https://images.unsplash.com/photo-1615751072497-5f5169febe17?w=1024&q=80";
 
 export const Route = createFileRoute("/")({
   head: () => ({
