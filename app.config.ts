@@ -12,4 +12,15 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  nitro: {
+    // Change deployment target from Cloudflare (default) to Vercel
+    preset: "vercel",
+  },
+  vite: {
+    build: {
+      rollupOptions: {
+        external: ["node:async_hooks"],
+      },
+    },
+  },
 });
