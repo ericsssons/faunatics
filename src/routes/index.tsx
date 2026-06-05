@@ -1,42 +1,46 @@
 import { createFileRoute } from "@tanstack/react-router";
 import {
   PawPrint, Heart, Users, Truck, Phone, Instagram, MapPin, Clock,
-  Star, Sparkles, ShoppingBag, Leaf, ArrowRight, Menu, X,
+  Star, Sparkles, ShoppingBag, Leaf, ArrowRight, Menu, X, CheckCircle2,
 } from "lucide-react";
-import { useState } from "react";
-
+import { useState, useEffect, useRef } from "react";
+ 
 const PHONE = "654 10 82 09";
 const PHONE_TEL = "+34654108209";
 const MAPS_URL = "https://www.google.com/maps/place/Faun%C3%A0tics+Reus/@41.1507486,1.0934748,14.5z/data=!4m6!3m5!1s0x12a151cb895593d9:0x93c36c07d61beab8!8m2!3d41.1588712!4d1.0733441!16s%2Fg%2F11c58241nt?entry=ttu&g_ep=EgoyMDI2MDUzMS4wIKXMDSoASAFQAw%3D%3D";
 const INSTAGRAM = "https://www.instagram.com/faunatics_/?hl=es";
-
-const heroStore = "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=1920&q=80";
-const productFood = "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=1024&q=80";
-const productCare = "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=1024&q=80";
-const productToys = "https://images.unsplash.com/photo-1615751072497-5f5169febe17?w=1024&q=80";
-
+ 
+const heroImg = "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=1400&q=85&auto=format";
+const productFood = "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=800&q=80&auto=format";
+const productCare = "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=800&q=80&auto=format";
+const productToys = "https://images.unsplash.com/photo-1615751072497-5f5169febe17?w=800&q=80&auto=format";
+ 
+function useInView(threshold = 0.15) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect(); } }, { threshold });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [threshold]);
+  return { ref, visible };
+}
+ 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "Faunàtics Reus — Tienda de mascotas con alma en Reus" },
-      { name: "description", content: "Tienda de mascotas en Reus: alimentación premium, asesoramiento personalizado y trato cercano. Anna y su equipo te esperan." },
-      { property: "og:title", content: "Faunàtics Reus — Tienda de mascotas" },
-      { property: "og:description", content: "Asesoramiento personalizado, productos premium y comunidad inclusiva en Reus." },
-      { property: "og:type", content: "website" },
-      { property: "og:url", content: "/" },
-    ],
-    links: [
-      { rel: "canonical", href: "/" },
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
-      { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Nunito:wght@400;500;600;700&display=swap" },
-    ],
-  }),
   component: Index,
 });
-
+ 
 function Nav() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const handler = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handler);
+    return () => window.removeEventListener("scroll", handler);
+  }, []);
+ 
   const links = [
     { href: "#inicio", label: "Inicio" },
     { href: "#productos", label: "Productos" },
@@ -44,125 +48,198 @@ function Nav() {
     { href: "#opiniones", label: "Opiniones" },
     { href: "#ubicacion", label: "Ubicación" },
   ];
+ 
   return (
-    <header className="fixed top-0 inset-x-0 z-50 glass border-b border-border/60">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 h-16 flex items-center justify-between">
-        <a href="#inicio" className="flex items-center gap-2 font-display font-bold text-lg text-primary">
-          <span className="w-9 h-9 rounded-full bg-gradient-leaf grid place-items-center text-primary-foreground shadow-soft">
-            <PawPrint size={18} />
-          </span>
-          Faunàtics <span className="text-accent">Reus</span>
+    <header style={{
+      position: "fixed", top: 0, left: 0, right: 0, zIndex: 50,
+      transition: "all 0.3s ease",
+      background: scrolled ? "rgba(255,252,245,0.92)" : "transparent",
+      backdropFilter: scrolled ? "blur(12px)" : "none",
+      borderBottom: scrolled ? "1px solid rgba(120,100,60,0.12)" : "none",
+      boxShadow: scrolled ? "0 1px 20px rgba(0,0,0,0.06)" : "none",
+    }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 1.5rem", height: 68, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <a href="#inicio" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
+          <div style={{ width: 38, height: 38, borderRadius: "50%", background: "linear-gradient(135deg, #5a7a2e, #7ea84a)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(90,122,46,0.35)" }}>
+            <PawPrint size={18} color="white" />
+          </div>
+          <div>
+            <span style={{ fontFamily: "'Quicksand', sans-serif", fontWeight: 700, fontSize: 17, color: "#2d4a0e", letterSpacing: "-0.3px" }}>Faunàtics</span>
+            <span style={{ fontFamily: "'Quicksand', sans-serif", fontWeight: 500, fontSize: 17, color: "#7ea84a", marginLeft: 4 }}>Reus</span>
+          </div>
         </a>
-        <nav className="hidden md:flex items-center gap-7 text-sm font-medium text-foreground/80">
+ 
+        <nav style={{ display: "flex", alignItems: "center", gap: 32 }} className="hidden-mobile">
           {links.map(l => (
-            <a key={l.href} href={l.href} className="hover:text-primary transition-colors">{l.label}</a>
+            <a key={l.href} href={l.href} style={{ fontFamily: "'Nunito', sans-serif", fontSize: 14, fontWeight: 600, color: "#4a3c28", textDecoration: "none", letterSpacing: "0.2px", transition: "color 0.2s" }}
+              onMouseEnter={e => (e.currentTarget.style.color = "#5a7a2e")}
+              onMouseLeave={e => (e.currentTarget.style.color = "#4a3c28")}>
+              {l.label}
+            </a>
           ))}
         </nav>
-        <a
-          href={`tel:${PHONE_TEL}`}
-          className="hidden sm:inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-4 py-2.5 text-sm font-semibold shadow-soft hover:opacity-95 transition"
-        >
-          <Phone size={16} /> Llamar ahora
-        </a>
-        <button onClick={() => setOpen(v => !v)} className="md:hidden p-2 rounded-lg hover:bg-muted" aria-label="Menú">
-          {open ? <X size={22} /> : <Menu size={22} />}
-        </button>
+ 
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <a href={`tel:${PHONE_TEL}`} style={{
+            display: "flex", alignItems: "center", gap: 8, padding: "10px 20px",
+            background: "linear-gradient(135deg, #5a7a2e, #7ea84a)", color: "white",
+            borderRadius: 50, textDecoration: "none", fontFamily: "'Nunito', sans-serif",
+            fontWeight: 700, fontSize: 13, boxShadow: "0 3px 12px rgba(90,122,46,0.4)",
+            transition: "transform 0.2s, box-shadow 0.2s",
+          }}
+            onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 5px 16px rgba(90,122,46,0.5)"; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 3px 12px rgba(90,122,46,0.4)"; }}>
+            <Phone size={14} /> Llamar ahora
+          </a>
+          <button onClick={() => setOpen(v => !v)} style={{ background: "none", border: "none", cursor: "pointer", padding: 8, color: "#4a3c28" }} className="show-mobile" aria-label="Menú">
+            {open ? <X size={22} /> : <Menu size={22} />}
+          </button>
+        </div>
       </div>
+ 
       {open && (
-        <div className="md:hidden border-t border-border/60 bg-background/95 backdrop-blur">
-          <div className="px-4 py-3 flex flex-col gap-1">
-            {links.map(l => (
-              <a key={l.href} href={l.href} onClick={() => setOpen(false)}
-                 className="py-3 px-2 rounded-lg hover:bg-muted text-foreground/85">{l.label}</a>
-            ))}
-            <a href={`tel:${PHONE_TEL}`} className="mt-2 inline-flex items-center justify-center gap-2 rounded-full bg-primary text-primary-foreground px-4 py-3 font-semibold">
-              <Phone size={16} /> Llamar ahora
-            </a>
-          </div>
+        <div style={{ background: "rgba(255,252,245,0.97)", backdropFilter: "blur(12px)", borderTop: "1px solid rgba(120,100,60,0.1)", padding: "1rem 1.5rem 1.5rem" }}>
+          {links.map(l => (
+            <a key={l.href} href={l.href} onClick={() => setOpen(false)} style={{
+              display: "block", padding: "12px 0", fontFamily: "'Nunito', sans-serif",
+              fontWeight: 600, fontSize: 16, color: "#4a3c28", textDecoration: "none",
+              borderBottom: "1px solid rgba(120,100,60,0.08)",
+            }}>{l.label}</a>
+          ))}
+          <a href={`tel:${PHONE_TEL}`} style={{
+            display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+            marginTop: 16, padding: "14px", background: "linear-gradient(135deg, #5a7a2e, #7ea84a)",
+            color: "white", borderRadius: 50, textDecoration: "none",
+            fontFamily: "'Nunito', sans-serif", fontWeight: 700, fontSize: 15,
+          }}>
+            <Phone size={16} /> Llamar ahora · {PHONE}
+          </a>
         </div>
       )}
+ 
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Nunito:wght@400;500;600;700&display=swap');
+        @media (max-width: 768px) { .hidden-mobile { display: none !important; } }
+        @media (min-width: 769px) { .show-mobile { display: none !important; } }
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { margin: 0; background: #fffcf5; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .fade-up { animation: fadeUp 0.7s ease forwards; }
+        .fade-in { animation: fadeIn 0.8s ease forwards; }
+      `}</style>
     </header>
   );
 }
-
+ 
 function Hero() {
   return (
-    <section id="inicio" className="relative pt-24 sm:pt-28">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 grid lg:grid-cols-2 gap-10 lg:gap-14 items-center py-12 sm:py-20">
-        <div className="animate-fade-up">
-          <span className="inline-flex items-center gap-2 rounded-full bg-secondary text-secondary-foreground px-3 py-1.5 text-xs font-semibold">
-            <Star size={14} className="fill-accent text-accent" /> 4,7 ★ en Google · Reus
-          </span>
-          <h1 className="mt-5 text-4xl sm:text-5xl lg:text-6xl font-bold leading-[1.05] text-foreground">
-            Cuidamos de los que <span className="text-primary">más quieres</span> en Reus.
+    <section id="inicio" style={{ position: "relative", minHeight: "100vh", display: "flex", alignItems: "center", overflow: "hidden" }}>
+      <div style={{ position: "absolute", inset: 0 }}>
+        <img src={heroImg} alt="Tienda Faunàtics Reus" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }} />
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(105deg, rgba(20,35,5,0.78) 0%, rgba(30,50,10,0.55) 50%, rgba(0,0,0,0.15) 100%)" }} />
+        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 60% 50%, rgba(90,122,46,0.12) 0%, transparent 70%)" }} />
+      </div>
+ 
+      <div style={{ position: "relative", maxWidth: 1200, margin: "0 auto", padding: "7rem 1.5rem 4rem", width: "100%" }}>
+        <div style={{ maxWidth: 620 }}>
+          <div className="fade-up" style={{ animationDelay: "0.1s", opacity: 0, display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(126,168,74,0.25)", backdropFilter: "blur(8px)", border: "1px solid rgba(126,168,74,0.4)", borderRadius: 50, padding: "6px 16px", marginBottom: 24 }}>
+            <Star size={14} fill="#f5c842" color="#f5c842" />
+            <span style={{ fontFamily: "'Nunito', sans-serif", fontSize: 13, fontWeight: 600, color: "#d4f0a0" }}>4,7 ★ en Google · Reus, Tarragona</span>
+          </div>
+ 
+          <h1 className="fade-up" style={{ animationDelay: "0.2s", opacity: 0, fontFamily: "'Quicksand', sans-serif", fontWeight: 700, fontSize: "clamp(2.2rem, 5vw, 3.6rem)", color: "white", lineHeight: 1.08, marginBottom: 20, letterSpacing: "-0.5px" }}>
+            Cuidamos de los que<br />
+            <span style={{ color: "#a8d96e" }}>más quieres</span> en Reus.
           </h1>
-          <p className="mt-5 text-base sm:text-lg text-muted-foreground max-w-xl">
-            Mucho más que una tienda de mascotas: asesoramiento personalizado,
-            productos de alta calidad y un trato humano e inclusivo.
+ 
+          <p className="fade-up" style={{ animationDelay: "0.35s", opacity: 0, fontFamily: "'Nunito', sans-serif", fontSize: "clamp(1rem, 2vw, 1.15rem)", color: "rgba(255,255,255,0.82)", lineHeight: 1.7, marginBottom: 36, maxWidth: 520 }}>
+            Mucho más que una tienda de mascotas: asesoramiento personalizado, productos de alta calidad y un trato humano e inclusivo.
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <a href={MAPS_URL} target="_blank" rel="noreferrer"
-              className="inline-flex items-center gap-2 rounded-full bg-primary text-primary-foreground px-6 py-3.5 font-semibold shadow-soft hover:opacity-95 transition">
-              <MapPin size={18} /> Ver cómo llegar
+ 
+          <div className="fade-up" style={{ animationDelay: "0.5s", opacity: 0, display: "flex", flexWrap: "wrap", gap: 12 }}>
+            <a href={MAPS_URL} target="_blank" rel="noreferrer" style={{
+              display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 28px",
+              background: "linear-gradient(135deg, #5a7a2e, #7ea84a)", color: "white",
+              borderRadius: 50, textDecoration: "none", fontFamily: "'Nunito', sans-serif",
+              fontWeight: 700, fontSize: 15, boxShadow: "0 4px 20px rgba(90,122,46,0.5)",
+              transition: "transform 0.2s, box-shadow 0.2s",
+            }}
+              onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(90,122,46,0.6)"; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 20px rgba(90,122,46,0.5)"; }}>
+              <MapPin size={16} /> Ver cómo llegar
             </a>
-            <a href={`tel:${PHONE_TEL}`}
-              className="inline-flex items-center gap-2 rounded-full bg-card border border-border px-6 py-3.5 font-semibold hover:bg-muted transition">
-              <Phone size={18} /> {PHONE}
+            <a href={`tel:${PHONE_TEL}`} style={{
+              display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 28px",
+              background: "rgba(255,255,255,0.12)", backdropFilter: "blur(8px)",
+              border: "1.5px solid rgba(255,255,255,0.3)", color: "white",
+              borderRadius: 50, textDecoration: "none", fontFamily: "'Nunito', sans-serif",
+              fontWeight: 700, fontSize: 15, transition: "background 0.2s",
+            }}
+              onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.2)")}
+              onMouseLeave={e => (e.currentTarget.style.background = "rgba(255,255,255,0.12)")}>
+              <Phone size={16} /> {PHONE}
             </a>
           </div>
-          <div className="mt-8 flex items-center gap-6 text-sm text-muted-foreground">
-            <div className="flex items-center gap-2"><Heart size={16} className="text-primary" /> Trato cercano</div>
-            <div className="flex items-center gap-2"><Leaf size={16} className="text-primary" /> Productos premium</div>
-          </div>
-        </div>
-        <div className="relative animate-fade-up delay-200">
-          <div className="absolute -inset-4 bg-gradient-leaf opacity-20 blur-3xl rounded-full" />
-          <img
-            src={heroStore}
-            alt="Interior cálido de Faunàtics Reus, tienda de mascotas en Reus"
-            width={1920} height={1280}
-            className="relative rounded-3xl shadow-card object-cover w-full h-[380px] sm:h-[520px]"
-          />
-          <div className="absolute -bottom-5 -left-5 sm:-left-8 bg-card rounded-2xl shadow-card p-4 flex items-center gap-3 border border-border">
-            <div className="w-10 h-10 rounded-full bg-secondary grid place-items-center text-accent">
-              <PawPrint size={18} />
-            </div>
-            <div className="text-sm">
-              <p className="font-semibold">+1.000 familias</p>
-              <p className="text-muted-foreground text-xs">confían en nosotros</p>
-            </div>
+ 
+          <div className="fade-up" style={{ animationDelay: "0.65s", opacity: 0, display: "flex", flexWrap: "wrap", gap: 20, marginTop: 40 }}>
+            {[
+              { icon: <Heart size={14} />, label: "Trato cercano y humano" },
+              { icon: <CheckCircle2 size={14} />, label: "Especialistas en nutrición" },
+              { icon: <Leaf size={14} />, label: "Productos premium" },
+            ].map(item => (
+              <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 6, color: "rgba(255,255,255,0.75)", fontFamily: "'Nunito', sans-serif", fontSize: 13, fontWeight: 600 }}>
+                <span style={{ color: "#a8d96e" }}>{item.icon}</span>
+                {item.label}
+              </div>
+            ))}
           </div>
         </div>
       </div>
+ 
+      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 80, background: "linear-gradient(to top, #fffcf5, transparent)" }} />
     </section>
   );
 }
-
+ 
 function Values() {
+  const { ref, visible } = useInView();
   const items = [
-    { icon: Heart, title: "Atención Personalizada", desc: "Asesoramiento experto de Anna y el equipo, especialistas en nutrición como Hydra Care." },
-    { icon: Sparkles, title: "Variedad Premium", desc: "Amplia selección de piensos, juguetes y accesorios para perros, gatos y más." },
-    { icon: Users, title: "Comunidad Inclusiva", desc: "Negocio liderado por mujeres y orgullosamente LGBTQ+ friendly." },
-    { icon: Truck, title: "Servicio Local", desc: "Compra en tienda, recogida en la puerta y entrega a domicilio en Reus." },
+    { icon: <Heart size={24} />, title: "Atención Personalizada", desc: "Anna y su equipo te asesoran con mimo. Especialistas en nutrición como Hydra Care.", color: "#e8f5d0", accent: "#5a7a2e" },
+    { icon: <Sparkles size={24} />, title: "Variedad Premium", desc: "Amplia selección de piensos, juguetes y accesorios para perros, gatos y más.", color: "#fef3e2", accent: "#c17d1a" },
+    { icon: <Users size={24} />, title: "Comunidad Inclusiva", desc: "Negocio liderado por mujeres, orgullosamente LGBTQ+ friendly y acogedor para todos.", color: "#fde8f0", accent: "#b5367a" },
+    { icon: <Truck size={24} />, title: "Servicio Local", desc: "Compra en tienda, recogida en puerta o entrega a domicilio en Reus.", color: "#e8f0fe", accent: "#3a5bb8" },
   ];
+ 
   return (
-    <section id="asesoramiento" className="py-20 sm:py-28 bg-gradient-warm">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="max-w-2xl">
-          <p className="text-sm font-semibold text-primary uppercase tracking-wider">Nuestros valores</p>
-          <h2 className="mt-2 text-3xl sm:text-4xl font-bold">Una tienda con alma, no solo un comercio.</h2>
-          <p className="mt-3 text-muted-foreground">Lo que nos diferencia es la manera en la que cuidamos a cada mascota y a cada familia que entra por la puerta.</p>
+    <section id="asesoramiento" style={{ background: "linear-gradient(180deg, #fffcf5 0%, #f5f0e8 100%)", padding: "6rem 1.5rem" }}>
+      <div ref={ref} style={{ maxWidth: 1200, margin: "0 auto" }}>
+        <div style={{ textAlign: "center", marginBottom: "3.5rem" }}>
+          <span style={{ fontFamily: "'Nunito', sans-serif", fontSize: 12, fontWeight: 700, color: "#7ea84a", letterSpacing: "2px", textTransform: "uppercase" }}>Nuestros valores</span>
+          <h2 style={{ fontFamily: "'Quicksand', sans-serif", fontWeight: 700, fontSize: "clamp(1.8rem, 4vw, 2.6rem)", color: "#2d4a0e", marginTop: 8, marginBottom: 12, letterSpacing: "-0.3px" }}>
+            Una tienda con alma,<br />no solo un comercio.
+          </h2>
+          <p style={{ fontFamily: "'Nunito', sans-serif", color: "#6b5a3e", fontSize: 16, maxWidth: 480, margin: "0 auto", lineHeight: 1.6 }}>
+            Lo que nos diferencia es la manera en que cuidamos a cada mascota y a cada familia.
+          </p>
         </div>
-        <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {items.map((it, i) => (
-            <div key={it.title}
-              className="group bg-card rounded-2xl p-6 border border-border shadow-card hover:-translate-y-1 transition-all animate-fade-up"
-              style={{ animationDelay: `${i * 0.08}s` }}>
-              <div className="w-12 h-12 rounded-xl bg-secondary text-primary grid place-items-center group-hover:bg-primary group-hover:text-primary-foreground transition">
-                <it.icon size={22} />
+ 
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 20 }}>
+          {items.map((item, i) => (
+            <div key={item.title} className={visible ? "fade-up" : ""} style={{
+              animationDelay: `${i * 0.1}s`, opacity: visible ? undefined : 0,
+              background: "white", borderRadius: 20, padding: "2rem 1.75rem",
+              border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 2px 16px rgba(0,0,0,0.06)",
+              transition: "transform 0.25s, box-shadow 0.25s",
+            }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = "translateY(-4px)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 28px rgba(0,0,0,0.1)"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = "translateY(0)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 2px 16px rgba(0,0,0,0.06)"; }}>
+              <div style={{ width: 52, height: 52, borderRadius: 14, background: item.color, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 16, color: item.accent }}>
+                {item.icon}
               </div>
-              <h3 className="mt-4 text-lg font-bold">{it.title}</h3>
-              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{it.desc}</p>
+              <h3 style={{ fontFamily: "'Quicksand', sans-serif", fontWeight: 700, fontSize: 17, color: "#2d3a1a", marginBottom: 8 }}>{item.title}</h3>
+              <p style={{ fontFamily: "'Nunito', sans-serif", fontSize: 14, color: "#6b5a3e", lineHeight: 1.65, margin: 0 }}>{item.desc}</p>
             </div>
           ))}
         </div>
@@ -170,41 +247,55 @@ function Values() {
     </section>
   );
 }
-
+ 
 function Products() {
+  const { ref, visible } = useInView();
   const cards = [
-    { img: productFood, title: "Alimentación de Alta Gama", desc: "Piensos seleccionados para cada etapa, raza y necesidad. Nutrición que se nota.", icon: ShoppingBag },
-    { img: productCare, title: "Salud y Cuidado · Hydra Care", desc: "Productos especializados para hidratación, piel y bienestar diario.", icon: Leaf },
-    { img: productToys, title: "Accesorios y Juguetes", desc: "Diversión, descanso y paseos: todo lo que tu peludo necesita.", icon: PawPrint },
+    { img: productFood, tag: "Más vendido", title: "Alimentación de Alta Gama", desc: "Piensos seleccionados para cada etapa, raza y necesidad. Nutrición que se nota desde el primer día.", icon: <ShoppingBag size={16} />, color: "#5a7a2e" },
+    { img: productCare, tag: "Especialidad", title: "Salud y Cuidado · Hydra Care", desc: "Productos especializados para hidratación, piel y bienestar diario recomendados por expertos.", icon: <Leaf size={16} />, color: "#c17d1a" },
+    { img: productToys, tag: "Para jugar", title: "Accesorios y Juguetes", desc: "Diversión, descanso y paseos: todo lo que tu peludo necesita para ser feliz contigo.", icon: <PawPrint size={16} />, color: "#b5367a" },
   ];
+ 
   return (
-    <section id="productos" className="py-20 sm:py-28">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="flex flex-wrap items-end justify-between gap-6">
-          <div className="max-w-2xl">
-            <p className="text-sm font-semibold text-primary uppercase tracking-wider">Productos destacados</p>
-            <h2 className="mt-2 text-3xl sm:text-4xl font-bold">Calidad seleccionada con mimo.</h2>
+    <section id="productos" style={{ background: "#fffcf5", padding: "6rem 1.5rem" }}>
+      <div ref={ref} style={{ maxWidth: 1200, margin: "0 auto" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "flex-end", justifyContent: "space-between", marginBottom: "3rem", gap: 16 }}>
+          <div>
+            <span style={{ fontFamily: "'Nunito', sans-serif", fontSize: 12, fontWeight: 700, color: "#7ea84a", letterSpacing: "2px", textTransform: "uppercase" }}>Productos destacados</span>
+            <h2 style={{ fontFamily: "'Quicksand', sans-serif", fontWeight: 700, fontSize: "clamp(1.8rem, 4vw, 2.6rem)", color: "#2d4a0e", marginTop: 8, letterSpacing: "-0.3px" }}>
+              Calidad seleccionada<br />con mimo.
+            </h2>
           </div>
-          <a href={`tel:${PHONE_TEL}`} className="text-sm font-semibold text-primary inline-flex items-center gap-1 hover:gap-2 transition-all">
+          <a href={`tel:${PHONE_TEL}`} style={{ display: "inline-flex", alignItems: "center", gap: 6, fontFamily: "'Nunito', sans-serif", fontWeight: 700, fontSize: 14, color: "#5a7a2e", textDecoration: "none" }}>
             Pregúntanos por una marca <ArrowRight size={16} />
           </a>
         </div>
-        <div className="mt-10 grid md:grid-cols-3 gap-6">
+ 
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24 }}>
           {cards.map((c, i) => (
-            <article key={c.title}
-              className="group bg-card rounded-3xl overflow-hidden border border-border shadow-card hover:-translate-y-1 transition-all animate-fade-up"
-              style={{ animationDelay: `${i * 0.1}s` }}>
-              <div className="aspect-[4/3] overflow-hidden">
-                <img src={c.img} alt={c.title} width={1024} height={1024} loading="lazy"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-              </div>
-              <div className="p-6">
-                <div className="inline-flex items-center gap-2 text-primary">
-                  <c.icon size={18} />
-                  <span className="text-xs font-semibold uppercase tracking-wider">Destacado</span>
+            <article key={c.title} className={visible ? "fade-up" : ""} style={{
+              animationDelay: `${i * 0.12}s`, opacity: visible ? undefined : 0,
+              background: "white", borderRadius: 24, overflow: "hidden",
+              border: "1px solid rgba(0,0,0,0.07)", boxShadow: "0 3px 18px rgba(0,0,0,0.07)",
+              transition: "transform 0.3s, box-shadow 0.3s",
+            }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = "translateY(-5px)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 12px 32px rgba(0,0,0,0.12)"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = "translateY(0)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 3px 18px rgba(0,0,0,0.07)"; }}>
+              <div style={{ aspectRatio: "4/3", overflow: "hidden", position: "relative" }}>
+                <img src={c.img} alt={c.title} style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.5s" }}
+                  onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.06)")}
+                  onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")} />
+                <div style={{ position: "absolute", top: 14, left: 14, background: "rgba(255,252,245,0.93)", backdropFilter: "blur(6px)", borderRadius: 50, padding: "4px 12px", fontFamily: "'Nunito', sans-serif", fontWeight: 700, fontSize: 11, color: c.color, letterSpacing: "0.5px", textTransform: "uppercase" }}>
+                  {c.tag}
                 </div>
-                <h3 className="mt-2 text-xl font-bold">{c.title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{c.desc}</p>
+              </div>
+              <div style={{ padding: "1.5rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, color: c.color, marginBottom: 8 }}>
+                  {c.icon}
+                  <span style={{ fontFamily: "'Nunito', sans-serif", fontWeight: 700, fontSize: 11, letterSpacing: "1px", textTransform: "uppercase" }}>Destacado</span>
+                </div>
+                <h3 style={{ fontFamily: "'Quicksand', sans-serif", fontWeight: 700, fontSize: 18, color: "#2d3a1a", marginBottom: 8 }}>{c.title}</h3>
+                <p style={{ fontFamily: "'Nunito', sans-serif", fontSize: 14, color: "#6b5a3e", lineHeight: 1.65, margin: 0 }}>{c.desc}</p>
               </div>
             </article>
           ))}
@@ -213,38 +304,49 @@ function Products() {
     </section>
   );
 }
-
+ 
 function Testimonials() {
+  const { ref, visible } = useInView();
   const quotes = [
-    { text: "La atención de Anna ha sido fantástica, se interesó mucho en ayudarme con la comida de mi gato. Da gusto que te asesoren así.", author: "Annita Y." },
-    { text: "Muy buena atención personalizada y tienen muchísimos productos de todo lo que buscamos.", author: "Inma C." },
-    { text: "Calidad y precio excelente, personal muy amable.", author: "Antonio · Local Guide" },
+    { text: "La atención de Anna ha sido fantástica, se interesó mucho en ayudarme con la comida de mi gato. Da gusto que te asesoren así.", author: "Annita Y.", initial: "A" },
+    { text: "Muy buena atención personalizada y tienen muchísimos productos de todo lo que buscamos.", author: "Inma C.", initial: "I" },
+    { text: "Calidad y precio excelente, personal muy amable.", author: "Antonio · Local Guide", initial: "An" },
   ];
+ 
   return (
-    <section id="opiniones" className="py-20 sm:py-28 bg-gradient-warm">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="text-center max-w-2xl mx-auto">
-          <p className="text-sm font-semibold text-primary uppercase tracking-wider">Opiniones reales</p>
-          <h2 className="mt-2 text-3xl sm:text-4xl font-bold">Lo que dicen nuestros Faunàtics.</h2>
-          <div className="mt-4 inline-flex items-center gap-1 text-accent">
-            {[...Array(5)].map((_, i) => <Star key={i} size={20} className="fill-accent" />)}
-            <span className="ml-2 text-sm text-muted-foreground font-medium">4,7 / 5 en Google</span>
+    <section id="opiniones" style={{ background: "linear-gradient(135deg, #2d4a0e 0%, #3d6614 50%, #2d4a0e 100%)", padding: "6rem 1.5rem", position: "relative", overflow: "hidden" }}>
+      <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(circle at 20% 50%, rgba(126,168,74,0.15) 0%, transparent 60%), radial-gradient(circle at 80% 20%, rgba(168,217,110,0.1) 0%, transparent 50%)" }} />
+      <div ref={ref} style={{ maxWidth: 1200, margin: "0 auto", position: "relative" }}>
+        <div style={{ textAlign: "center", marginBottom: "3.5rem" }}>
+          <span style={{ fontFamily: "'Nunito', sans-serif", fontSize: 12, fontWeight: 700, color: "#a8d96e", letterSpacing: "2px", textTransform: "uppercase" }}>Opiniones reales</span>
+          <h2 style={{ fontFamily: "'Quicksand', sans-serif", fontWeight: 700, fontSize: "clamp(1.8rem, 4vw, 2.6rem)", color: "white", marginTop: 8, marginBottom: 8 }}>
+            Lo que dicen nuestros Faunàtics.
+          </h2>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 4, marginTop: 12 }}>
+            {[...Array(5)].map((_, i) => <Star key={i} size={18} fill="#f5c842" color="#f5c842" />)}
+            <span style={{ fontFamily: "'Nunito', sans-serif", fontWeight: 600, fontSize: 14, color: "rgba(255,255,255,0.7)", marginLeft: 8 }}>4,7 / 5 en Google</span>
           </div>
         </div>
-        <div className="mt-12 grid md:grid-cols-3 gap-6">
+ 
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 20 }}>
           {quotes.map((q, i) => (
-            <figure key={q.author}
-              className="bg-card rounded-2xl p-6 border border-border shadow-card animate-fade-up"
-              style={{ animationDelay: `${i * 0.1}s` }}>
-              <div className="flex gap-1 text-accent">
-                {[...Array(5)].map((_, j) => <Star key={j} size={16} className="fill-accent" />)}
+            <figure key={q.author} className={visible ? "fade-up" : ""} style={{
+              animationDelay: `${i * 0.12}s`, opacity: visible ? undefined : 0,
+              background: "rgba(255,255,255,0.08)", backdropFilter: "blur(12px)",
+              border: "1px solid rgba(255,255,255,0.15)", borderRadius: 20,
+              padding: "1.75rem", margin: 0,
+            }}>
+              <div style={{ display: "flex", gap: 2, marginBottom: 16 }}>
+                {[...Array(5)].map((_, j) => <Star key={j} size={14} fill="#f5c842" color="#f5c842" />)}
               </div>
-              <blockquote className="mt-4 text-foreground/90 leading-relaxed">"{q.text}"</blockquote>
-              <figcaption className="mt-5 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-secondary text-primary grid place-items-center font-bold">
-                  {q.author[0]}
+              <blockquote style={{ fontFamily: "'Nunito', sans-serif", fontSize: 15, color: "rgba(255,255,255,0.88)", lineHeight: 1.7, margin: "0 0 1.25rem", fontStyle: "italic" }}>
+                "{q.text}"
+              </blockquote>
+              <figcaption style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <div style={{ width: 40, height: 40, borderRadius: "50%", background: "linear-gradient(135deg, #5a7a2e, #a8d96e)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Quicksand', sans-serif", fontWeight: 700, fontSize: 14, color: "white", flexShrink: 0 }}>
+                  {q.initial}
                 </div>
-                <span className="font-semibold text-sm">{q.author}</span>
+                <span style={{ fontFamily: "'Nunito', sans-serif", fontWeight: 700, fontSize: 14, color: "rgba(255,255,255,0.9)" }}>{q.author}</span>
               </figcaption>
             </figure>
           ))}
@@ -253,98 +355,127 @@ function Testimonials() {
     </section>
   );
 }
-
+ 
 function Location() {
+  const { ref, visible } = useInView();
   const hours = [
-    ["Lunes", "10:00 – 19:00"],
-    ["Martes", "10:00 – 19:00"],
-    ["Miércoles", "10:00 – 19:00"],
-    ["Jueves", "10:00 – 19:00"],
-    ["Viernes", "10:00 – 19:00"],
-    ["Sábado", "9:00 – 14:00"],
+    ["Lunes", "10:00 – 19:00"], ["Martes", "10:00 – 19:00"],
+    ["Miércoles", "10:00 – 19:00"], ["Jueves", "10:00 – 19:00"],
+    ["Viernes", "10:00 – 19:00"], ["Sábado", "9:00 – 14:00"],
     ["Domingo", "Cerrado"],
   ];
+ 
   return (
-    <section id="ubicacion" className="py-20 sm:py-28">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 grid lg:grid-cols-2 gap-10">
-        <div>
-          <p className="text-sm font-semibold text-primary uppercase tracking-wider">Visítanos</p>
-          <h2 className="mt-2 text-3xl sm:text-4xl font-bold">Te esperamos en Reus.</h2>
-          <p className="mt-3 text-muted-foreground">Abierto de lunes a sábado. Ven a conocernos, te atenderemos como mereces.</p>
-          <div className="mt-8 space-y-4">
-            <a href={`tel:${PHONE_TEL}`} className="flex items-center gap-4 p-4 rounded-2xl bg-card border border-border hover:border-primary transition group">
-              <div className="w-11 h-11 rounded-xl bg-secondary text-primary grid place-items-center group-hover:bg-primary group-hover:text-primary-foreground transition"><Phone size={20} /></div>
-              <div><p className="text-xs text-muted-foreground">Teléfono</p><p className="font-semibold">{PHONE}</p></div>
-            </a>
-            <a href={INSTAGRAM} target="_blank" rel="noreferrer" className="flex items-center gap-4 p-4 rounded-2xl bg-card border border-border hover:border-primary transition group">
-              <div className="w-11 h-11 rounded-xl bg-secondary text-primary grid place-items-center group-hover:bg-primary group-hover:text-primary-foreground transition"><Instagram size={20} /></div>
-              <div><p className="text-xs text-muted-foreground">Instagram</p><p className="font-semibold">@faunatics_</p></div>
-            </a>
-            <a href={MAPS_URL} target="_blank" rel="noreferrer" className="flex items-center gap-4 p-4 rounded-2xl bg-card border border-border hover:border-primary transition group">
-              <div className="w-11 h-11 rounded-xl bg-secondary text-primary grid place-items-center group-hover:bg-primary group-hover:text-primary-foreground transition"><MapPin size={20} /></div>
-              <div><p className="text-xs text-muted-foreground">Dirección</p><p className="font-semibold">Carrer d'Ignasi Iglésias, 145 · 43206 Reus</p></div>
-            </a>
-          </div>
-          <div className="mt-6 p-5 rounded-2xl bg-secondary/60 border border-border">
-            <div className="flex items-center gap-2 font-semibold"><Clock size={18} className="text-primary" /> Horario</div>
-            <dl className="mt-3 grid grid-cols-2 gap-y-1.5 text-sm">
-              {hours.map(([d, h]) => (
-                <div key={d} className="contents">
-                  <dt className="text-muted-foreground">{d}</dt>
-                  <dd className="font-medium text-right">{h}</dd>
-                </div>
-              ))}
-            </dl>
-          </div>
+    <section id="ubicacion" style={{ background: "#f5f0e8", padding: "6rem 1.5rem" }}>
+      <div ref={ref} style={{ maxWidth: 1200, margin: "0 auto" }}>
+        <div style={{ textAlign: "center", marginBottom: "3rem" }}>
+          <span style={{ fontFamily: "'Nunito', sans-serif", fontSize: 12, fontWeight: 700, color: "#7ea84a", letterSpacing: "2px", textTransform: "uppercase" }}>Visítanos</span>
+          <h2 style={{ fontFamily: "'Quicksand', sans-serif", fontWeight: 700, fontSize: "clamp(1.8rem, 4vw, 2.6rem)", color: "#2d4a0e", marginTop: 8, letterSpacing: "-0.3px" }}>
+            Te esperamos en Reus.
+          </h2>
         </div>
-        <div className="relative">
-          <div className="rounded-3xl overflow-hidden shadow-card border border-border h-full min-h-[400px]">
+ 
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 28, alignItems: "start" }}>
+          <div className={visible ? "fade-up" : ""} style={{ opacity: visible ? undefined : 0, animationDelay: "0.1s" }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 24 }}>
+              {[
+                { icon: <Phone size={20} />, label: "Teléfono", value: PHONE, href: `tel:${PHONE_TEL}`, color: "#5a7a2e" },
+                { icon: <Instagram size={20} />, label: "Instagram", value: "@faunatics_", href: INSTAGRAM, color: "#b5367a" },
+                { icon: <MapPin size={20} />, label: "Dirección", value: "Carrer d'Ignasi Iglésias, 145 · 43206 Reus", href: MAPS_URL, color: "#3a5bb8" },
+              ].map(item => (
+                <a key={item.label} href={item.href} target={item.href.startsWith("http") ? "_blank" : undefined} rel="noreferrer" style={{
+                  display: "flex", alignItems: "center", gap: 16, padding: "16px 20px",
+                  background: "white", borderRadius: 16, border: "1px solid rgba(0,0,0,0.07)",
+                  textDecoration: "none", transition: "border-color 0.2s, box-shadow 0.2s, transform 0.2s",
+                  boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
+                }}
+                  onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = item.color; el.style.boxShadow = `0 4px 20px rgba(0,0,0,0.1)`; el.style.transform = "translateX(4px)"; }}
+                  onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = "rgba(0,0,0,0.07)"; el.style.boxShadow = "0 2px 12px rgba(0,0,0,0.05)"; el.style.transform = "translateX(0)"; }}>
+                  <div style={{ width: 44, height: 44, borderRadius: 12, background: `${item.color}18`, display: "flex", alignItems: "center", justifyContent: "center", color: item.color, flexShrink: 0 }}>
+                    {item.icon}
+                  </div>
+                  <div>
+                    <p style={{ fontFamily: "'Nunito', sans-serif", fontSize: 11, fontWeight: 700, color: "#9a8a70", textTransform: "uppercase", letterSpacing: "1px", margin: 0 }}>{item.label}</p>
+                    <p style={{ fontFamily: "'Nunito', sans-serif", fontSize: 15, fontWeight: 700, color: "#2d3a1a", margin: "2px 0 0" }}>{item.value}</p>
+                  </div>
+                </a>
+              ))}
+            </div>
+ 
+            <div style={{ background: "white", borderRadius: 16, padding: "20px 22px", border: "1px solid rgba(0,0,0,0.07)", boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+                <Clock size={18} color="#5a7a2e" />
+                <span style={{ fontFamily: "'Quicksand', sans-serif", fontWeight: 700, fontSize: 15, color: "#2d4a0e" }}>Horario</span>
+                <span style={{ marginLeft: "auto", background: "#e8f5d0", color: "#3d6614", fontFamily: "'Nunito', sans-serif", fontWeight: 700, fontSize: 11, padding: "3px 10px", borderRadius: 50, letterSpacing: "0.5px" }}>ABIERTO LUN–SÁB</span>
+              </div>
+              <dl style={{ display: "grid", gridTemplateColumns: "1fr 1fr", rowGap: 6 }}>
+                {hours.map(([day, time]) => (
+                  <div key={day} style={{ display: "contents" }}>
+                    <dt style={{ fontFamily: "'Nunito', sans-serif", fontSize: 13, color: "#9a8a70", fontWeight: 600 }}>{day}</dt>
+                    <dd style={{ fontFamily: "'Nunito', sans-serif", fontSize: 13, color: time === "Cerrado" ? "#d04040" : "#2d3a1a", fontWeight: 700, textAlign: "right", margin: 0 }}>{time}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          </div>
+ 
+          <div className={visible ? "fade-up" : ""} style={{ opacity: visible ? undefined : 0, animationDelay: "0.25s", borderRadius: 24, overflow: "hidden", border: "1px solid rgba(0,0,0,0.1)", boxShadow: "0 8px 32px rgba(0,0,0,0.1)", position: "relative", minHeight: 420 }}>
             <iframe
               title="Mapa de Faunàtics Reus"
               src="https://www.google.com/maps?q=Faun%C3%A0tics+Reus,+Carrer+d'Ignasi+Igl%C3%A9sias+145,+43206+Reus&output=embed"
-              className="w-full h-full min-h-[400px] border-0"
+              style={{ width: "100%", height: "100%", minHeight: 420, border: "none", display: "block" }}
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
             />
+            <a href={MAPS_URL} target="_blank" rel="noreferrer" style={{
+              position: "absolute", bottom: 16, left: "50%", transform: "translateX(-50%)",
+              display: "inline-flex", alignItems: "center", gap: 8, padding: "12px 24px",
+              background: "linear-gradient(135deg, #5a7a2e, #7ea84a)", color: "white",
+              borderRadius: 50, textDecoration: "none", fontFamily: "'Nunito', sans-serif",
+              fontWeight: 700, fontSize: 14, boxShadow: "0 4px 16px rgba(90,122,46,0.5)", whiteSpace: "nowrap",
+            }}>
+              <MapPin size={16} /> Abrir en Google Maps
+            </a>
           </div>
-          <a href={MAPS_URL} target="_blank" rel="noreferrer"
-             className="absolute bottom-4 left-4 right-4 sm:right-auto inline-flex items-center justify-center gap-2 rounded-full bg-primary text-primary-foreground px-5 py-3 font-semibold shadow-soft hover:opacity-95 transition">
-            <MapPin size={18} /> Abrir en Google Maps
-          </a>
         </div>
       </div>
     </section>
   );
 }
-
+ 
 function Footer() {
   return (
-    <footer className="bg-foreground text-background/90">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-12 grid sm:grid-cols-3 gap-8 items-center">
-        <div className="flex items-center gap-2 font-display font-bold text-lg">
-          <span className="w-9 h-9 rounded-full bg-gradient-leaf grid place-items-center text-primary-foreground"><PawPrint size={18} /></span>
-          Faunàtics Reus
+    <footer style={{ background: "#1e2e0a", padding: "2.5rem 1.5rem" }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 20 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{ width: 32, height: 32, borderRadius: "50%", background: "linear-gradient(135deg, #5a7a2e, #7ea84a)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <PawPrint size={14} color="white" />
+          </div>
+          <span style={{ fontFamily: "'Quicksand', sans-serif", fontWeight: 700, fontSize: 15, color: "rgba(255,255,255,0.9)" }}>Faunàtics Reus</span>
         </div>
-        <div className="flex sm:justify-center gap-4">
-          <a href={INSTAGRAM} target="_blank" rel="noreferrer"
-             className="inline-flex items-center gap-2 rounded-full bg-background/10 hover:bg-background/20 px-4 py-2 transition">
-            <Instagram size={18} /> @faunatics_
-          </a>
-        </div>
-        <div className="sm:text-right">
-          <span className="inline-flex items-center gap-2 rounded-full bg-accent/20 text-accent px-3 py-1.5 text-xs font-semibold">
-            <Heart size={14} /> Orgullosamente en Reus
+ 
+        <a href={INSTAGRAM} target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 50, padding: "8px 18px", textDecoration: "none", fontFamily: "'Nunito', sans-serif", fontWeight: 600, fontSize: 13, color: "rgba(255,255,255,0.8)", transition: "background 0.2s" }}
+          onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.14)")}
+          onMouseLeave={e => (e.currentTarget.style.background = "rgba(255,255,255,0.08)")}>
+          <Instagram size={15} /> @faunatics_
+        </a>
+ 
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <span style={{ background: "rgba(168,217,110,0.15)", border: "1px solid rgba(168,217,110,0.25)", borderRadius: 50, padding: "5px 14px", fontFamily: "'Nunito', sans-serif", fontWeight: 700, fontSize: 11, color: "#a8d96e", display: "flex", alignItems: "center", gap: 5 }}>
+            <Heart size={11} fill="#a8d96e" /> Orgullosamente en Reus
           </span>
-          <p className="mt-3 text-xs text-background/60">© {new Date().getFullYear()} Faunàtics Reus. Todos los derechos reservados.</p>
+          <span style={{ fontFamily: "'Nunito', sans-serif", fontSize: 12, color: "rgba(255,255,255,0.35)" }}>
+            © {new Date().getFullYear()} Faunàtics Reus
+          </span>
         </div>
       </div>
     </footer>
   );
 }
-
+ 
 function Index() {
   return (
-    <div className="min-h-screen bg-background">
+    <div style={{ minHeight: "100vh", background: "#fffcf5" }}>
       <Nav />
       <main>
         <Hero />
