@@ -2,19 +2,21 @@ import { createFileRoute } from "@tanstack/react-router";
 import {
   PawPrint, Heart, Users, Truck, Phone, Instagram, MapPin, Clock,
   Star, Sparkles, ShoppingBag, Leaf, ArrowRight, Menu, X, CheckCircle2,
+  MessageCircle,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
- 
+
 const PHONE = "654 10 82 09";
 const PHONE_TEL = "+34654108209";
+const WHATSAPP_URL = "https://wa.me/34654108209?text=Hola%2C%20me%20gustar%C3%ADa%20obtener%20m%C3%A1s%20informaci%C3%B3n%20sobre%20vuestros%20productos.";
 const MAPS_URL = "https://www.google.com/maps/place/Faun%C3%A0tics+Reus/@41.1507486,1.0934748,14.5z/data=!4m6!3m5!1s0x12a151cb895593d9:0x93c36c07d61beab8!8m2!3d41.1588712!4d1.0733441!16s%2Fg%2F11c58241nt?entry=ttu&g_ep=EgoyMDI2MDUzMS4wIKXMDSoASAFQAw%3D%3D";
 const INSTAGRAM = "https://www.instagram.com/faunatics_/?hl=es";
- 
+
 const heroImg = "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=1400&q=85&auto=format";
 const productFood = "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=800&q=80&auto=format";
 const productCare = "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=800&q=80&auto=format";
 const productToys = "https://images.unsplash.com/photo-1615751072497-5f5169febe17?w=800&q=80&auto=format";
- 
+
 function useInView(threshold = 0.15) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
@@ -27,11 +29,59 @@ function useInView(threshold = 0.15) {
   }, [threshold]);
   return { ref, visible };
 }
- 
+
 export const Route = createFileRoute("/")({
   component: Index,
 });
- 
+
+function WhatsAppButton() {
+  const [visible, setVisible] = useState(false);
+  const [pulse, setPulse] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setVisible(true), 1500);
+    const pulseTimer = setTimeout(() => setPulse(false), 6000);
+    return () => { clearTimeout(timer); clearTimeout(pulseTimer); };
+  }, []);
+
+  return (
+    <a
+      href={WHATSAPP_URL}
+      target="_blank"
+      rel="noreferrer"
+      aria-label="Contactar por WhatsApp"
+      style={{
+        position: "fixed", bottom: 24, right: 24, zIndex: 999,
+        width: 60, height: 60, borderRadius: "50%",
+        background: "linear-gradient(135deg, #25d366, #128c7e)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        boxShadow: "0 4px 20px rgba(37,211,102,0.5)",
+        textDecoration: "none", color: "white",
+        opacity: visible ? 1 : 0,
+        transform: visible ? "scale(1) translateY(0)" : "scale(0.5) translateY(20px)",
+        transition: "opacity 0.4s ease, transform 0.4s ease",
+      }}
+      onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = "scale(1.1)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 6px 28px rgba(37,211,102,0.65)"; }}
+      onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = "scale(1)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 20px rgba(37,211,102,0.5)"; }}
+    >
+      <MessageCircle size={28} fill="white" color="white" />
+      {pulse && (
+        <span style={{
+          position: "absolute", inset: 0, borderRadius: "50%",
+          background: "rgba(37,211,102,0.4)",
+          animation: "waPulse 1.5s ease-out infinite",
+        }} />
+      )}
+      <style>{`
+        @keyframes waPulse {
+          0% { transform: scale(1); opacity: 0.8; }
+          100% { transform: scale(1.8); opacity: 0; }
+        }
+      `}</style>
+    </a>
+  );
+}
+
 function Nav() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -40,7 +90,7 @@ function Nav() {
     window.addEventListener("scroll", handler);
     return () => window.removeEventListener("scroll", handler);
   }, []);
- 
+
   const links = [
     { href: "#inicio", label: "Inicio" },
     { href: "#productos", label: "Productos" },
@@ -48,7 +98,7 @@ function Nav() {
     { href: "#opiniones", label: "Opiniones" },
     { href: "#ubicacion", label: "Ubicación" },
   ];
- 
+
   return (
     <header style={{
       position: "fixed", top: 0, left: 0, right: 0, zIndex: 50,
@@ -68,7 +118,7 @@ function Nav() {
             <span style={{ fontFamily: "'Quicksand', sans-serif", fontWeight: 500, fontSize: 17, color: "#7ea84a", marginLeft: 4 }}>Reus</span>
           </div>
         </a>
- 
+
         <nav style={{ display: "flex", alignItems: "center", gap: 32 }} className="hidden-mobile">
           {links.map(l => (
             <a key={l.href} href={l.href} style={{ fontFamily: "'Nunito', sans-serif", fontSize: 14, fontWeight: 600, color: "#4a3c28", textDecoration: "none", letterSpacing: "0.2px", transition: "color 0.2s" }}
@@ -78,8 +128,19 @@ function Nav() {
             </a>
           ))}
         </nav>
- 
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <a href={WHATSAPP_URL} target="_blank" rel="noreferrer" className="hidden-mobile" style={{
+            display: "flex", alignItems: "center", gap: 7, padding: "9px 18px",
+            background: "#25d366", color: "white", borderRadius: 50,
+            textDecoration: "none", fontFamily: "'Nunito', sans-serif",
+            fontWeight: 700, fontSize: 13, boxShadow: "0 2px 10px rgba(37,211,102,0.35)",
+            transition: "transform 0.2s, box-shadow 0.2s",
+          }}
+            onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 4px 14px rgba(37,211,102,0.5)"; }}
+            onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 2px 10px rgba(37,211,102,0.35)"; }}>
+            <MessageCircle size={14} /> WhatsApp
+          </a>
           <a href={`tel:${PHONE_TEL}`} style={{
             display: "flex", alignItems: "center", gap: 8, padding: "10px 20px",
             background: "linear-gradient(135deg, #5a7a2e, #7ea84a)", color: "white",
@@ -96,7 +157,7 @@ function Nav() {
           </button>
         </div>
       </div>
- 
+
       {open && (
         <div style={{ background: "rgba(255,252,245,0.97)", backdropFilter: "blur(12px)", borderTop: "1px solid rgba(120,100,60,0.1)", padding: "1rem 1.5rem 1.5rem" }}>
           {links.map(l => (
@@ -106,17 +167,26 @@ function Nav() {
               borderBottom: "1px solid rgba(120,100,60,0.08)",
             }}>{l.label}</a>
           ))}
-          <a href={`tel:${PHONE_TEL}`} style={{
-            display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-            marginTop: 16, padding: "14px", background: "linear-gradient(135deg, #5a7a2e, #7ea84a)",
-            color: "white", borderRadius: 50, textDecoration: "none",
-            fontFamily: "'Nunito', sans-serif", fontWeight: 700, fontSize: 15,
-          }}>
-            <Phone size={16} /> Llamar ahora · {PHONE}
-          </a>
+          <div style={{ display: "flex", gap: 10, marginTop: 16 }}>
+            <a href={WHATSAPP_URL} target="_blank" rel="noreferrer" style={{
+              flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+              padding: "13px", background: "#25d366", color: "white", borderRadius: 50,
+              textDecoration: "none", fontFamily: "'Nunito', sans-serif", fontWeight: 700, fontSize: 14,
+            }}>
+              <MessageCircle size={16} /> WhatsApp
+            </a>
+            <a href={`tel:${PHONE_TEL}`} style={{
+              flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+              padding: "13px", background: "linear-gradient(135deg, #5a7a2e, #7ea84a)",
+              color: "white", borderRadius: 50, textDecoration: "none",
+              fontFamily: "'Nunito', sans-serif", fontWeight: 700, fontSize: 14,
+            }}>
+              <Phone size={16} /> Llamar
+            </a>
+          </div>
         </div>
       )}
- 
+
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Nunito:wght@400;500;600;700&display=swap');
         @media (max-width: 768px) { .hidden-mobile { display: none !important; } }
@@ -132,57 +202,50 @@ function Nav() {
     </header>
   );
 }
- 
+
 function Hero() {
   return (
     <section id="inicio" style={{ position: "relative", minHeight: "100vh", display: "flex", alignItems: "center", overflow: "hidden" }}>
       <div style={{ position: "absolute", inset: 0 }}>
         <img src={heroImg} alt="Tienda Faunàtics Reus" style={{ width: "100%", height: "100%", objectFit: "cover", objectPosition: "center" }} />
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(105deg, rgba(20,35,5,0.78) 0%, rgba(30,50,10,0.55) 50%, rgba(0,0,0,0.15) 100%)" }} />
-        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(ellipse at 60% 50%, rgba(90,122,46,0.12) 0%, transparent 70%)" }} />
       </div>
- 
+
       <div style={{ position: "relative", maxWidth: 1200, margin: "0 auto", padding: "7rem 1.5rem 4rem", width: "100%" }}>
         <div style={{ maxWidth: 620 }}>
           <div className="fade-up" style={{ animationDelay: "0.1s", opacity: 0, display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(126,168,74,0.25)", backdropFilter: "blur(8px)", border: "1px solid rgba(126,168,74,0.4)", borderRadius: 50, padding: "6px 16px", marginBottom: 24 }}>
             <Star size={14} fill="#f5c842" color="#f5c842" />
             <span style={{ fontFamily: "'Nunito', sans-serif", fontSize: 13, fontWeight: 600, color: "#d4f0a0" }}>4,7 ★ en Google · Reus, Tarragona</span>
           </div>
- 
+
           <h1 className="fade-up" style={{ animationDelay: "0.2s", opacity: 0, fontFamily: "'Quicksand', sans-serif", fontWeight: 700, fontSize: "clamp(2.2rem, 5vw, 3.6rem)", color: "white", lineHeight: 1.08, marginBottom: 20, letterSpacing: "-0.5px" }}>
             Cuidamos de los que<br />
             <span style={{ color: "#a8d96e" }}>más quieres</span> en Reus.
           </h1>
- 
+
           <p className="fade-up" style={{ animationDelay: "0.35s", opacity: 0, fontFamily: "'Nunito', sans-serif", fontSize: "clamp(1rem, 2vw, 1.15rem)", color: "rgba(255,255,255,0.82)", lineHeight: 1.7, marginBottom: 36, maxWidth: 520 }}>
             Mucho más que una tienda de mascotas: asesoramiento personalizado, productos de alta calidad y un trato humano e inclusivo.
           </p>
- 
+
           <div className="fade-up" style={{ animationDelay: "0.5s", opacity: 0, display: "flex", flexWrap: "wrap", gap: 12 }}>
             <a href={MAPS_URL} target="_blank" rel="noreferrer" style={{
               display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 28px",
               background: "linear-gradient(135deg, #5a7a2e, #7ea84a)", color: "white",
               borderRadius: 50, textDecoration: "none", fontFamily: "'Nunito', sans-serif",
               fontWeight: 700, fontSize: 15, boxShadow: "0 4px 20px rgba(90,122,46,0.5)",
-              transition: "transform 0.2s, box-shadow 0.2s",
-            }}
-              onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; e.currentTarget.style.boxShadow = "0 8px 24px rgba(90,122,46,0.6)"; }}
-              onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 4px 20px rgba(90,122,46,0.5)"; }}>
+            }}>
               <MapPin size={16} /> Ver cómo llegar
             </a>
-            <a href={`tel:${PHONE_TEL}`} style={{
+            <a href={WHATSAPP_URL} target="_blank" rel="noreferrer" style={{
               display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 28px",
-              background: "rgba(255,255,255,0.12)", backdropFilter: "blur(8px)",
-              border: "1.5px solid rgba(255,255,255,0.3)", color: "white",
-              borderRadius: 50, textDecoration: "none", fontFamily: "'Nunito', sans-serif",
-              fontWeight: 700, fontSize: 15, transition: "background 0.2s",
-            }}
-              onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.2)")}
-              onMouseLeave={e => (e.currentTarget.style.background = "rgba(255,255,255,0.12)")}>
-              <Phone size={16} /> {PHONE}
+              background: "#25d366", color: "white", borderRadius: 50,
+              textDecoration: "none", fontFamily: "'Nunito', sans-serif",
+              fontWeight: 700, fontSize: 15, boxShadow: "0 4px 20px rgba(37,211,102,0.45)",
+            }}>
+              <MessageCircle size={16} /> Escribir por WhatsApp
             </a>
           </div>
- 
+
           <div className="fade-up" style={{ animationDelay: "0.65s", opacity: 0, display: "flex", flexWrap: "wrap", gap: 20, marginTop: 40 }}>
             {[
               { icon: <Heart size={14} />, label: "Trato cercano y humano" },
@@ -197,12 +260,11 @@ function Hero() {
           </div>
         </div>
       </div>
- 
       <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 80, background: "linear-gradient(to top, #fffcf5, transparent)" }} />
     </section>
   );
 }
- 
+
 function Values() {
   const { ref, visible } = useInView();
   const items = [
@@ -211,7 +273,6 @@ function Values() {
     { icon: <Users size={24} />, title: "Comunidad Inclusiva", desc: "Negocio liderado por mujeres, orgullosamente LGBTQ+ friendly y acogedor para todos.", color: "#fde8f0", accent: "#b5367a" },
     { icon: <Truck size={24} />, title: "Servicio Local", desc: "Compra en tienda, recogida en puerta o entrega a domicilio en Reus.", color: "#e8f0fe", accent: "#3a5bb8" },
   ];
- 
   return (
     <section id="asesoramiento" style={{ background: "linear-gradient(180deg, #fffcf5 0%, #f5f0e8 100%)", padding: "6rem 1.5rem" }}>
       <div ref={ref} style={{ maxWidth: 1200, margin: "0 auto" }}>
@@ -224,7 +285,6 @@ function Values() {
             Lo que nos diferencia es la manera en que cuidamos a cada mascota y a cada familia.
           </p>
         </div>
- 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 20 }}>
           {items.map((item, i) => (
             <div key={item.title} className={visible ? "fade-up" : ""} style={{
@@ -247,7 +307,7 @@ function Values() {
     </section>
   );
 }
- 
+
 function Products() {
   const { ref, visible } = useInView();
   const cards = [
@@ -255,7 +315,6 @@ function Products() {
     { img: productCare, tag: "Especialidad", title: "Salud y Cuidado · Hydra Care", desc: "Productos especializados para hidratación, piel y bienestar diario recomendados por expertos.", icon: <Leaf size={16} />, color: "#c17d1a" },
     { img: productToys, tag: "Para jugar", title: "Accesorios y Juguetes", desc: "Diversión, descanso y paseos: todo lo que tu peludo necesita para ser feliz contigo.", icon: <PawPrint size={16} />, color: "#b5367a" },
   ];
- 
   return (
     <section id="productos" style={{ background: "#fffcf5", padding: "6rem 1.5rem" }}>
       <div ref={ref} style={{ maxWidth: 1200, margin: "0 auto" }}>
@@ -270,7 +329,6 @@ function Products() {
             Pregúntanos por una marca <ArrowRight size={16} />
           </a>
         </div>
- 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24 }}>
           {cards.map((c, i) => (
             <article key={c.title} className={visible ? "fade-up" : ""} style={{
@@ -304,7 +362,7 @@ function Products() {
     </section>
   );
 }
- 
+
 function Testimonials() {
   const { ref, visible } = useInView();
   const quotes = [
@@ -312,10 +370,9 @@ function Testimonials() {
     { text: "Muy buena atención personalizada y tienen muchísimos productos de todo lo que buscamos.", author: "Inma C.", initial: "I" },
     { text: "Calidad y precio excelente, personal muy amable.", author: "Antonio · Local Guide", initial: "An" },
   ];
- 
   return (
     <section id="opiniones" style={{ background: "linear-gradient(135deg, #2d4a0e 0%, #3d6614 50%, #2d4a0e 100%)", padding: "6rem 1.5rem", position: "relative", overflow: "hidden" }}>
-      <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(circle at 20% 50%, rgba(126,168,74,0.15) 0%, transparent 60%), radial-gradient(circle at 80% 20%, rgba(168,217,110,0.1) 0%, transparent 50%)" }} />
+      <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(circle at 20% 50%, rgba(126,168,74,0.15) 0%, transparent 60%)" }} />
       <div ref={ref} style={{ maxWidth: 1200, margin: "0 auto", position: "relative" }}>
         <div style={{ textAlign: "center", marginBottom: "3.5rem" }}>
           <span style={{ fontFamily: "'Nunito', sans-serif", fontSize: 12, fontWeight: 700, color: "#a8d96e", letterSpacing: "2px", textTransform: "uppercase" }}>Opiniones reales</span>
@@ -327,7 +384,6 @@ function Testimonials() {
             <span style={{ fontFamily: "'Nunito', sans-serif", fontWeight: 600, fontSize: 14, color: "rgba(255,255,255,0.7)", marginLeft: 8 }}>4,7 / 5 en Google</span>
           </div>
         </div>
- 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 20 }}>
           {quotes.map((q, i) => (
             <figure key={q.author} className={visible ? "fade-up" : ""} style={{
@@ -351,11 +407,22 @@ function Testimonials() {
             </figure>
           ))}
         </div>
+
+        <div style={{ textAlign: "center", marginTop: "3rem" }}>
+          <a href={WHATSAPP_URL} target="_blank" rel="noreferrer" style={{
+            display: "inline-flex", alignItems: "center", gap: 10, padding: "15px 32px",
+            background: "#25d366", color: "white", borderRadius: 50,
+            textDecoration: "none", fontFamily: "'Nunito', sans-serif",
+            fontWeight: 700, fontSize: 16, boxShadow: "0 4px 20px rgba(37,211,102,0.4)",
+          }}>
+            <MessageCircle size={18} /> ¿Tienes dudas? Escríbenos por WhatsApp
+          </a>
+        </div>
       </div>
     </section>
   );
 }
- 
+
 function Location() {
   const { ref, visible } = useInView();
   const hours = [
@@ -364,7 +431,6 @@ function Location() {
     ["Viernes", "10:00 – 19:00"], ["Sábado", "9:00 – 14:00"],
     ["Domingo", "Cerrado"],
   ];
- 
   return (
     <section id="ubicacion" style={{ background: "#f5f0e8", padding: "6rem 1.5rem" }}>
       <div ref={ref} style={{ maxWidth: 1200, margin: "0 auto" }}>
@@ -374,12 +440,12 @@ function Location() {
             Te esperamos en Reus.
           </h2>
         </div>
- 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 28, alignItems: "start" }}>
           <div className={visible ? "fade-up" : ""} style={{ opacity: visible ? undefined : 0, animationDelay: "0.1s" }}>
             <div style={{ display: "flex", flexDirection: "column", gap: 14, marginBottom: 24 }}>
               {[
                 { icon: <Phone size={20} />, label: "Teléfono", value: PHONE, href: `tel:${PHONE_TEL}`, color: "#5a7a2e" },
+                { icon: <MessageCircle size={20} />, label: "WhatsApp", value: "Escríbenos directamente", href: WHATSAPP_URL, color: "#25d366" },
                 { icon: <Instagram size={20} />, label: "Instagram", value: "@faunatics_", href: INSTAGRAM, color: "#b5367a" },
                 { icon: <MapPin size={20} />, label: "Dirección", value: "Carrer d'Ignasi Iglésias, 145 · 43206 Reus", href: MAPS_URL, color: "#3a5bb8" },
               ].map(item => (
@@ -389,8 +455,8 @@ function Location() {
                   textDecoration: "none", transition: "border-color 0.2s, box-shadow 0.2s, transform 0.2s",
                   boxShadow: "0 2px 12px rgba(0,0,0,0.05)",
                 }}
-                  onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = item.color; el.style.boxShadow = `0 4px 20px rgba(0,0,0,0.1)`; el.style.transform = "translateX(4px)"; }}
-                  onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = "rgba(0,0,0,0.07)"; el.style.boxShadow = "0 2px 12px rgba(0,0,0,0.05)"; el.style.transform = "translateX(0)"; }}>
+                  onMouseEnter={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = item.color; el.style.transform = "translateX(4px)"; }}
+                  onMouseLeave={e => { const el = e.currentTarget as HTMLElement; el.style.borderColor = "rgba(0,0,0,0.07)"; el.style.transform = "translateX(0)"; }}>
                   <div style={{ width: 44, height: 44, borderRadius: 12, background: `${item.color}18`, display: "flex", alignItems: "center", justifyContent: "center", color: item.color, flexShrink: 0 }}>
                     {item.icon}
                   </div>
@@ -401,12 +467,11 @@ function Location() {
                 </a>
               ))}
             </div>
- 
             <div style={{ background: "white", borderRadius: 16, padding: "20px 22px", border: "1px solid rgba(0,0,0,0.07)", boxShadow: "0 2px 12px rgba(0,0,0,0.05)" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
                 <Clock size={18} color="#5a7a2e" />
                 <span style={{ fontFamily: "'Quicksand', sans-serif", fontWeight: 700, fontSize: 15, color: "#2d4a0e" }}>Horario</span>
-                <span style={{ marginLeft: "auto", background: "#e8f5d0", color: "#3d6614", fontFamily: "'Nunito', sans-serif", fontWeight: 700, fontSize: 11, padding: "3px 10px", borderRadius: 50, letterSpacing: "0.5px" }}>ABIERTO LUN–SÁB</span>
+                <span style={{ marginLeft: "auto", background: "#e8f5d0", color: "#3d6614", fontFamily: "'Nunito', sans-serif", fontWeight: 700, fontSize: 11, padding: "3px 10px", borderRadius: 50 }}>ABIERTO LUN–SÁB</span>
               </div>
               <dl style={{ display: "grid", gridTemplateColumns: "1fr 1fr", rowGap: 6 }}>
                 {hours.map(([day, time]) => (
@@ -418,7 +483,7 @@ function Location() {
               </dl>
             </div>
           </div>
- 
+
           <div className={visible ? "fade-up" : ""} style={{ opacity: visible ? undefined : 0, animationDelay: "0.25s", borderRadius: 24, overflow: "hidden", border: "1px solid rgba(0,0,0,0.1)", boxShadow: "0 8px 32px rgba(0,0,0,0.1)", position: "relative", minHeight: 420 }}>
             <iframe
               title="Mapa de Faunàtics Reus"
@@ -442,7 +507,7 @@ function Location() {
     </section>
   );
 }
- 
+
 function Footer() {
   return (
     <footer style={{ background: "#1e2e0a", padding: "2.5rem 1.5rem" }}>
@@ -453,13 +518,14 @@ function Footer() {
           </div>
           <span style={{ fontFamily: "'Quicksand', sans-serif", fontWeight: 700, fontSize: 15, color: "rgba(255,255,255,0.9)" }}>Faunàtics Reus</span>
         </div>
- 
-        <a href={INSTAGRAM} target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 50, padding: "8px 18px", textDecoration: "none", fontFamily: "'Nunito', sans-serif", fontWeight: 600, fontSize: 13, color: "rgba(255,255,255,0.8)", transition: "background 0.2s" }}
-          onMouseEnter={e => (e.currentTarget.style.background = "rgba(255,255,255,0.14)")}
-          onMouseLeave={e => (e.currentTarget.style.background = "rgba(255,255,255,0.08)")}>
-          <Instagram size={15} /> @faunatics_
-        </a>
- 
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          <a href={WHATSAPP_URL} target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 7, background: "rgba(37,211,102,0.15)", border: "1px solid rgba(37,211,102,0.3)", borderRadius: 50, padding: "8px 16px", textDecoration: "none", fontFamily: "'Nunito', sans-serif", fontWeight: 600, fontSize: 13, color: "#5dde8a" }}>
+            <MessageCircle size={14} /> WhatsApp
+          </a>
+          <a href={INSTAGRAM} target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 7, background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 50, padding: "8px 16px", textDecoration: "none", fontFamily: "'Nunito', sans-serif", fontWeight: 600, fontSize: 13, color: "rgba(255,255,255,0.8)" }}>
+            <Instagram size={14} /> @faunatics_
+          </a>
+        </div>
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
           <span style={{ background: "rgba(168,217,110,0.15)", border: "1px solid rgba(168,217,110,0.25)", borderRadius: 50, padding: "5px 14px", fontFamily: "'Nunito', sans-serif", fontWeight: 700, fontSize: 11, color: "#a8d96e", display: "flex", alignItems: "center", gap: 5 }}>
             <Heart size={11} fill="#a8d96e" /> Orgullosamente en Reus
@@ -472,7 +538,7 @@ function Footer() {
     </footer>
   );
 }
- 
+
 function Index() {
   return (
     <div style={{ minHeight: "100vh", background: "#fffcf5" }}>
@@ -485,6 +551,7 @@ function Index() {
         <Location />
       </main>
       <Footer />
+      <WhatsAppButton />
     </div>
   );
 }
