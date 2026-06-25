@@ -1,8 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import {
-  PawPrint, Heart, Users, Truck, Phone, Instagram, MapPin, Clock,
+  Heart, Users, Truck, Phone, Instagram, MapPin, Clock,
   Star, Sparkles, ShoppingBag, Leaf, ArrowRight, Menu, X, CheckCircle2,
-  MessageCircle,
+  MessageCircle, PawPrint,
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 
@@ -17,31 +17,107 @@ const productFood = "https://images.unsplash.com/photo-1589924691995-400dc9ecc11
 const productCare = "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=800&q=80&auto=format";
 const productToys = "https://images.unsplash.com/photo-1615751072497-5f5169febe17?w=800&q=80&auto=format";
 
-// PALETA VERMELLA
-// Principal:   #C0392B (vermell fosc)
-// Secundari:   #E74C3C (vermell mitjà)
-// Clar:        #F1948A (vermell clar)
-// Superficial: #FDECEA (vermell molt clar)
-// Fons:        #FFF8F7 (crema càlid)
-// Text fosc:   #3D0A06
-
+// ── HOOK: IntersectionObserver ──────────────────────────────────
 function useInView(threshold = 0.15) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect(); } }, { threshold });
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) { setVisible(true); obs.disconnect(); } },
+      { threshold }
+    );
     obs.observe(el);
     return () => obs.disconnect();
   }, [threshold]);
   return { ref, visible };
 }
 
+// ── HOOK: Comptador animat ──────────────────────────────────────
+function useCounter(target: number, duration = 1800, start = false) {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    if (!start) return;
+    let startTime: number | null = null;
+    const step = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.floor(eased * target));
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }, [start, target, duration]);
+  return count;
+}
+
+// ── SVG LOGO FAUNÀTICS ──────────────────────────────────────────
+function FaunaticsLogo({ size = 36, scrolled = false }: { size?: number; scrolled?: boolean }) {
+  return (
+    <svg
+      width={size * 3.2}
+      height={size}
+      viewBox="0 0 160 50"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      style={{ transition: "all 0.3s ease" }}
+    >
+      {/* Icona pateta */}
+      <circle cx="12" cy="25" r="10" fill="#C0392B" />
+      <circle cx="6" cy="14" r="4.5" fill="#C0392B" />
+      <circle cx="18" cy="14" r="4.5" fill="#C0392B" />
+      <circle cx="3" cy="20" r="3.5" fill="#C0392B" />
+      <circle cx="21" cy="20" r="3.5" fill="#C0392B" />
+      {/* Text Faunàtics */}
+      <text
+        x="30"
+        y="34"
+        fontFamily="'Quicksand', sans-serif"
+        fontWeight="700"
+        fontSize={scrolled ? "22" : "24"}
+        fill="#C0392B"
+        style={{ transition: "font-size 0.3s ease" }}
+      >
+        Faunàtics
+      </text>
+    </svg>
+  );
+}
+
+// ── FAVICON INJECTAT DINÀMICAMENT ───────────────────────────────
+function useFavicon() {
+  useEffect(() => {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+      <circle cx="16" cy="20" r="11" fill="#C0392B"/>
+      <circle cx="9" cy="9" r="5" fill="#C0392B"/>
+      <circle cx="23" cy="9" r="5" fill="#C0392B"/>
+      <circle cx="4.5" cy="15" r="4" fill="#C0392B"/>
+      <circle cx="27.5" cy="15" r="4" fill="#C0392B"/>
+      <circle cx="16" cy="20" r="7" fill="white"/>
+      <circle cx="12" cy="18" r="2.5" fill="#C0392B"/>
+      <circle cx="20" cy="18" r="2.5" fill="#C0392B"/>
+      <ellipse cx="16" cy="22" rx="3" ry="2" fill="#C0392B"/>
+    </svg>`;
+    const blob = new Blob([svg], { type: "image/svg+xml" });
+    const url = URL.createObjectURL(blob);
+    let link = document.querySelector<HTMLLinkElement>("link[rel~='icon']");
+    if (!link) {
+      link = document.createElement("link");
+      link.rel = "icon";
+      document.head.appendChild(link);
+    }
+    link.href = url;
+    document.title = "Faunàtics Reus — Botiga de mascotes";
+    return () => URL.revokeObjectURL(url);
+  }, []);
+}
+
 export const Route = createFileRoute("/")({
   component: Index,
 });
 
+// ── WHATSAPP FLOTANT ────────────────────────────────────────────
 function WhatsAppButton() {
   const [visible, setVisible] = useState(false);
   const [pulse, setPulse] = useState(true);
@@ -51,7 +127,8 @@ function WhatsAppButton() {
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
   return (
-    <a href={WHATSAPP_URL} target="_blank" rel="noreferrer" aria-label="Contactar per WhatsApp"
+    <a href={WHATSAPP_URL} target="_blank" rel="noreferrer"
+      aria-label="Contactar per WhatsApp"
       style={{
         position: "fixed", bottom: 24, right: 24, zIndex: 999,
         width: 60, height: 60, borderRadius: "50%",
@@ -66,17 +143,24 @@ function WhatsAppButton() {
       onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = "scale(1.1)"; }}
       onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = "scale(1)"; }}>
       <MessageCircle size={28} fill="white" color="white" />
-      {pulse && <span style={{ position: "absolute", inset: 0, borderRadius: "50%", background: "rgba(37,211,102,0.4)", animation: "waPulse 1.5s ease-out infinite" }} />}
-      <style>{`@keyframes waPulse { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(1.8); opacity: 0; } }`}</style>
+      {pulse && (
+        <span style={{
+          position: "absolute", inset: 0, borderRadius: "50%",
+          background: "rgba(37,211,102,0.4)",
+          animation: "waPulse 1.5s ease-out infinite",
+        }} />
+      )}
+      <style>{`@keyframes waPulse { 0%{transform:scale(1);opacity:.8} 100%{transform:scale(1.8);opacity:0} }`}</style>
     </a>
   );
 }
 
+// ── NAV ─────────────────────────────────────────────────────────
 function Nav() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 20);
+    const handler = () => setScrolled(window.scrollY > 30);
     window.addEventListener("scroll", handler);
     return () => window.removeEventListener("scroll", handler);
   }, []);
@@ -92,26 +176,28 @@ function Nav() {
   return (
     <header style={{
       position: "fixed", top: 0, left: 0, right: 0, zIndex: 50,
-      transition: "all 0.3s ease",
+      transition: "all 0.35s ease",
       background: scrolled ? "rgba(255,248,247,0.94)" : "transparent",
-      backdropFilter: scrolled ? "blur(12px)" : "none",
+      backdropFilter: scrolled ? "blur(14px)" : "none",
       borderBottom: scrolled ? "1px solid rgba(192,57,43,0.12)" : "none",
-      boxShadow: scrolled ? "0 1px 20px rgba(0,0,0,0.06)" : "none",
+      boxShadow: scrolled ? "0 2px 24px rgba(0,0,0,0.07)" : "none",
+      // Altura que redueix en fer scroll
+      height: scrolled ? 58 : 70,
     }}>
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 1.5rem", height: 68, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <a href="#inici" style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}>
-          <div style={{ width: 38, height: 38, borderRadius: "50%", background: "linear-gradient(135deg, #C0392B, #E74C3C)", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px rgba(192,57,43,0.35)" }}>
-            <PawPrint size={18} color="white" />
-          </div>
-          <div>
-            <span style={{ fontFamily: "'Quicksand', sans-serif", fontWeight: 700, fontSize: 17, color: "#3D0A06", letterSpacing: "-0.3px" }}>Faunàtics</span>
-            <span style={{ fontFamily: "'Quicksand', sans-serif", fontWeight: 500, fontSize: 17, color: "#C0392B", marginLeft: 4 }}>Reus</span>
-          </div>
+      <div style={{
+        maxWidth: 1200, margin: "0 auto", padding: "0 1.5rem",
+        height: "100%", display: "flex", alignItems: "center", justifyContent: "space-between",
+        transition: "height 0.35s ease",
+      }}>
+        {/* LOGO SVG amb transició de mida */}
+        <a href="#inici" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
+          <FaunaticsLogo size={scrolled ? 30 : 36} scrolled={scrolled} />
         </a>
 
         <nav style={{ display: "flex", alignItems: "center", gap: 32 }} className="hidden-mobile">
           {links.map(l => (
-            <a key={l.href} href={l.href} style={{ fontFamily: "'Nunito', sans-serif", fontSize: 14, fontWeight: 600, color: "#4a2020", textDecoration: "none", transition: "color 0.2s" }}
+            <a key={l.href} href={l.href}
+              style={{ fontFamily: "'Nunito', sans-serif", fontSize: 14, fontWeight: 600, color: "#4a2020", textDecoration: "none", transition: "color 0.2s" }}
               onMouseEnter={e => (e.currentTarget.style.color = "#C0392B")}
               onMouseLeave={e => (e.currentTarget.style.color = "#4a2020")}>
               {l.label}
@@ -121,28 +207,30 @@ function Nav() {
 
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
           <a href={WHATSAPP_URL} target="_blank" rel="noreferrer" className="hidden-mobile" style={{
-            display: "flex", alignItems: "center", gap: 7, padding: "9px 18px",
+            display: "flex", alignItems: "center", gap: 7,
+            padding: scrolled ? "8px 16px" : "9px 18px",
             background: "#25d366", color: "white", borderRadius: 50,
             textDecoration: "none", fontFamily: "'Nunito', sans-serif",
-            fontWeight: 700, fontSize: 13, boxShadow: "0 2px 10px rgba(37,211,102,0.35)",
-            transition: "transform 0.2s",
-          }}
-            onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; }}>
+            fontWeight: 700, fontSize: 13, transition: "all 0.3s ease",
+            boxShadow: "0 2px 10px rgba(37,211,102,0.35)",
+          }}>
             <MessageCircle size={14} /> WhatsApp
           </a>
           <a href={`tel:${PHONE_TEL}`} style={{
-            display: "flex", alignItems: "center", gap: 8, padding: "10px 20px",
+            display: "flex", alignItems: "center", gap: 8,
+            padding: scrolled ? "8px 18px" : "10px 20px",
             background: "linear-gradient(135deg, #C0392B, #E74C3C)", color: "white",
             borderRadius: 50, textDecoration: "none", fontFamily: "'Nunito', sans-serif",
-            fontWeight: 700, fontSize: 13, boxShadow: "0 3px 12px rgba(192,57,43,0.4)",
-            transition: "transform 0.2s, box-shadow 0.2s",
+            fontWeight: 700, fontSize: 13, transition: "all 0.3s ease",
+            boxShadow: "0 3px 12px rgba(192,57,43,0.4)",
           }}
-            onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 5px 16px rgba(192,57,43,0.5)"; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 3px 12px rgba(192,57,43,0.4)"; }}>
+            onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 5px 16px rgba(192,57,43,0.55)"; }}
+            onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 3px 12px rgba(192,57,43,0.4)"; }}>
             <Phone size={14} /> Truca ara
           </a>
-          <button onClick={() => setOpen(v => !v)} style={{ background: "none", border: "none", cursor: "pointer", padding: 8, color: "#4a2020" }} className="show-mobile" aria-label="Menú">
+          <button onClick={() => setOpen(v => !v)}
+            style={{ background: "none", border: "none", cursor: "pointer", padding: 8, color: "#4a2020" }}
+            className="show-mobile" aria-label="Menú">
             {open ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>
@@ -191,6 +279,7 @@ function Nav() {
   );
 }
 
+// ── HERO ────────────────────────────────────────────────────────
 function Hero() {
   return (
     <section id="inici" style={{ position: "relative", minHeight: "100vh", display: "flex", alignItems: "center", overflow: "hidden" }}>
@@ -253,6 +342,40 @@ function Hero() {
   );
 }
 
+// ── COMPTADORS ANIMATS ──────────────────────────────────────────
+function Stats() {
+  const { ref, visible } = useInView(0.3);
+  const families = useCounter(1000, 1800, visible);
+  const years    = useCounter(8, 1400, visible);
+  const rating   = useCounter(47, 1600, visible);
+
+  const stats = [
+    { value: families, suffix: "+", label: "famílies confien en nosaltres", icon: <Heart size={22} /> },
+    { value: years,    suffix: "+", label: "anys al servei de Reus",         icon: <Star  size={22} /> },
+    { value: rating,   suffix: "",  label: "sobre 50 a Google Reviews",      icon: <PawPrint size={22} />, prefix: "", display: `${Math.floor(rating / 10)},${rating % 10}` },
+  ];
+
+  return (
+    <section style={{ background: "linear-gradient(135deg, #C0392B 0%, #A93226 50%, #C0392B 100%)", padding: "4rem 1.5rem" }}>
+      <div ref={ref} style={{ maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 32 }}>
+        {stats.map((s, i) => (
+          <div key={s.label} className={visible ? "fade-up" : ""} style={{
+            animationDelay: `${i * 0.15}s`, opacity: visible ? undefined : 0,
+            textAlign: "center",
+          }}>
+            <div style={{ color: "rgba(255,255,255,0.6)", marginBottom: 8, display: "flex", justifyContent: "center" }}>{s.icon}</div>
+            <div style={{ fontFamily: "'Quicksand', sans-serif", fontWeight: 700, fontSize: "clamp(2.4rem, 5vw, 3.2rem)", color: "white", lineHeight: 1, letterSpacing: "-1px" }}>
+              {s.display ?? `${s.value}${s.suffix}`}
+            </div>
+            <div style={{ fontFamily: "'Nunito', sans-serif", fontSize: 14, color: "rgba(255,255,255,0.72)", marginTop: 6, fontWeight: 500 }}>{s.label}</div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// ── VALORS ──────────────────────────────────────────────────────
 function Values() {
   const { ref, visible } = useInView();
   const items = [
@@ -296,12 +419,13 @@ function Values() {
   );
 }
 
+// ── PRODUCTES ───────────────────────────────────────────────────
 function Products() {
   const { ref, visible } = useInView();
   const cards = [
-    { img: productFood, tag: "Més venut", title: "Alimentació d'Alta Gamma", desc: "Pinsos seleccionats per a cada etapa, raça i necessitat. Nutrició que es nota des del primer dia.", icon: <ShoppingBag size={16} />, color: "#C0392B" },
+    { img: productFood, tag: "Més venut",  title: "Alimentació d'Alta Gamma",   desc: "Pinsos seleccionats per a cada etapa, raça i necessitat. Nutrició que es nota des del primer dia.", icon: <ShoppingBag size={16} />, color: "#C0392B" },
     { img: productCare, tag: "Especialitat", title: "Salut i Cura · Hydra Care", desc: "Productes especialitzats per a hidratació, pell i benestar diari recomanats per experts.", icon: <Leaf size={16} />, color: "#c17d1a" },
-    { img: productToys, tag: "Per jugar", title: "Accessoris i Joguines", desc: "Diversió, descans i passejades: tot el que el teu pelut necessita per ser feliç amb tu.", icon: <PawPrint size={16} />, color: "#b5367a" },
+    { img: productToys, tag: "Per jugar",  title: "Accessoris i Joguines",       desc: "Diversió, descans i passejades: tot el que el teu pelut necessita per ser feliç amb tu.", icon: <PawPrint size={16} />, color: "#b5367a" },
   ];
   return (
     <section id="productes" style={{ background: "#FFF8F7", padding: "6rem 1.5rem" }}>
@@ -351,6 +475,7 @@ function Products() {
   );
 }
 
+// ── TESTIMONIS ──────────────────────────────────────────────────
 function Testimonials() {
   const { ref, visible } = useInView();
   const quotes = [
@@ -410,6 +535,7 @@ function Testimonials() {
   );
 }
 
+// ── UBICACIÓ ────────────────────────────────────────────────────
 function Location() {
   const { ref, visible } = useInView();
   const hours = [
@@ -495,16 +621,12 @@ function Location() {
   );
 }
 
+// ── FOOTER ──────────────────────────────────────────────────────
 function Footer() {
   return (
     <footer style={{ background: "#3D0A06", padding: "2.5rem 1.5rem" }}>
       <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 20 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 32, height: 32, borderRadius: "50%", background: "linear-gradient(135deg, #C0392B, #E74C3C)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <PawPrint size={14} color="white" />
-          </div>
-          <span style={{ fontFamily: "'Quicksand', sans-serif", fontWeight: 700, fontSize: 15, color: "rgba(255,255,255,0.9)" }}>Faunàtics Reus</span>
-        </div>
+        <FaunaticsLogo size={28} scrolled={false} />
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
           <a href={WHATSAPP_URL} target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 7, background: "rgba(37,211,102,0.15)", border: "1px solid rgba(37,211,102,0.3)", borderRadius: 50, padding: "8px 16px", textDecoration: "none", fontFamily: "'Nunito', sans-serif", fontWeight: 600, fontSize: 13, color: "#5dde8a" }}>
             <MessageCircle size={14} /> WhatsApp
@@ -526,12 +648,15 @@ function Footer() {
   );
 }
 
+// ── INDEX ───────────────────────────────────────────────────────
 function Index() {
+  useFavicon();
   return (
     <div style={{ minHeight: "100vh", background: "#FFF8F7" }}>
       <Nav />
       <main>
         <Hero />
+        <Stats />
         <Values />
         <Products />
         <Testimonials />
