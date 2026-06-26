@@ -475,6 +475,103 @@ function Products() {
   );
 }
 
+// ── CATÀLEG DE PRODUCTES ────────────────────────────────────────
+function Catalogue() {
+  const { ref, visible } = useInView();
+
+  const categories = [
+    { icon: <ShoppingBag size={28} />, name: "Alimentació", desc: "Pinsos, llaunes i snacks", color: "#FDECEA", accent: "#C0392B" },
+    { icon: <Leaf size={28} />, name: "Salut i Higiene", desc: "Xampús, antiparasitaris i cura", color: "#fef3e2", accent: "#c17d1a" },
+    { icon: <PawPrint size={28} />, name: "Joguines", desc: "Per a gossos, gats i altres", color: "#fde8f0", accent: "#b5367a" },
+    { icon: <Heart size={28} />, name: "Accessoris", desc: "Collars, lliteres i transportins", color: "#e8f0fe", accent: "#3a5bb8" },
+    { icon: <Sparkles size={28} />, name: "Hidra Care", desc: "Línia especialitzada d'hidratació", color: "#FDECEA", accent: "#C0392B" },
+    { icon: <Users size={28} />, name: "Petits animals", desc: "Productes per a rosegadors i ocells", color: "#e8f5e9", accent: "#2e7d32" },
+  ];
+
+  return (
+    <section id="cataleg" style={{ background: "#FFF8F7", padding: "6rem 1.5rem" }}>
+      <div ref={ref} style={{ maxWidth: 1200, margin: "0 auto" }}>
+
+        {/* Capçalera */}
+        <div style={{ textAlign: "center", marginBottom: "3.5rem" }}>
+          <span style={{ fontFamily: "'Nunito', sans-serif", fontSize: 12, fontWeight: 700, color: "#C0392B", letterSpacing: "2px", textTransform: "uppercase" }}>
+            Catàleg
+          </span>
+          <h2 style={{ fontFamily: "'Quicksand', sans-serif", fontWeight: 700, fontSize: "clamp(1.8rem, 4vw, 2.6rem)", color: "#3D0A06", marginTop: 8, marginBottom: 12, letterSpacing: "-0.3px" }}>
+            Els nostres productes
+          </h2>
+          <p style={{ fontFamily: "'Nunito', sans-serif", color: "#6b3030", fontSize: 16, maxWidth: 520, margin: "0 auto", lineHeight: 1.6 }}>
+            Aviat podràs consultar tots els nostres productes aquí. De moment, vine a la botiga o escriu-nos i t'assessorem personalment.
+          </p>
+        </div>
+
+        {/* Banner "Pròximament" */}
+        <div style={{
+          background: "linear-gradient(135deg, #C0392B, #E74C3C)",
+          borderRadius: 20, padding: "2rem 2.5rem", marginBottom: "2.5rem",
+          display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 20,
+        }}>
+          <div>
+            <div style={{ fontFamily: "'Quicksand', sans-serif", fontWeight: 700, fontSize: 22, color: "white", marginBottom: 6 }}>
+              🛍️ Catàleg complet — Pròximament
+            </div>
+            <div style={{ fontFamily: "'Nunito', sans-serif", fontSize: 15, color: "rgba(255,255,255,0.82)", lineHeight: 1.5 }}>
+              Estem preparant el catàleg en línia amb tots els productes de la botiga.<br />
+              Mentrestant, escriu-nos i et diem si el tenim disponible.
+            </div>
+          </div>
+          <a href={WHATSAPP_URL} target="_blank" rel="noreferrer" style={{
+            display: "inline-flex", alignItems: "center", gap: 8, padding: "13px 26px",
+            background: "white", color: "#C0392B", borderRadius: 50,
+            textDecoration: "none", fontFamily: "'Nunito', sans-serif",
+            fontWeight: 700, fontSize: 15, boxShadow: "0 4px 16px rgba(0,0,0,0.15)",
+            whiteSpace: "nowrap", transition: "transform 0.2s",
+          }}
+            onMouseEnter={e => (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)"}
+            onMouseLeave={e => (e.currentTarget as HTMLElement).style.transform = "translateY(0)"}>
+            <MessageCircle size={16} /> Preguntar per WhatsApp
+          </a>
+        </div>
+
+        {/* Graella de categories */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 16 }}>
+          {categories.map((cat, i) => (
+            <div key={cat.name} className={visible ? "fade-up" : ""} style={{
+              animationDelay: `${i * 0.08}s`, opacity: visible ? undefined : 0,
+              background: "white", borderRadius: 18, padding: "1.75rem 1.5rem",
+              border: "1px solid rgba(192,57,43,0.08)", boxShadow: "0 2px 14px rgba(0,0,0,0.05)",
+              textAlign: "center", transition: "transform 0.25s, box-shadow 0.25s",
+              position: "relative", overflow: "hidden",
+            }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = "translateY(-4px)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 24px rgba(192,57,43,0.12)"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = "translateY(0)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 2px 14px rgba(0,0,0,0.05)"; }}>
+              {/* Badge "Aviat" */}
+              <div style={{
+                position: "absolute", top: 12, right: 12,
+                background: "#FDECEA", color: "#C0392B",
+                fontFamily: "'Nunito', sans-serif", fontWeight: 700, fontSize: 9,
+                padding: "3px 8px", borderRadius: 50, letterSpacing: "0.5px", textTransform: "uppercase",
+              }}>
+                Aviat
+              </div>
+              <div style={{ width: 56, height: 56, borderRadius: 16, background: cat.color, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 14px", color: cat.accent }}>
+                {cat.icon}
+              </div>
+              <h3 style={{ fontFamily: "'Quicksand', sans-serif", fontWeight: 700, fontSize: 16, color: "#3D0A06", marginBottom: 6 }}>{cat.name}</h3>
+              <p style={{ fontFamily: "'Nunito', sans-serif", fontSize: 13, color: "#9a6060", margin: 0, lineHeight: 1.5 }}>{cat.desc}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Nota inferior */}
+        <p style={{ textAlign: "center", fontFamily: "'Nunito', sans-serif", fontSize: 14, color: "#9a6060", marginTop: "2.5rem", fontStyle: "italic" }}>
+          ¿No trobes el que busques? Truca'ns al <a href={`tel:${PHONE_TEL}`} style={{ color: "#C0392B", fontWeight: 700, textDecoration: "none" }}>{PHONE}</a> i ho mirem junts.
+        </p>
+      </div>
+    </section>
+  );
+}
+
 // ── TESTIMONIS ──────────────────────────────────────────────────
 function Testimonials() {
   const { ref, visible } = useInView();
