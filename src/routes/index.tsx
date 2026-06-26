@@ -718,6 +718,238 @@ function Location() {
   );
 }
 
+// ── QUI SOM ─────────────────────────────────────────────────────
+function WhoWeAre() {
+  const { ref, visible } = useInView();
+  const teamImg = "https://images.unsplash.com/photo-1535268244668-91c429be6932?w=800&q=80&auto=format";
+
+  return (
+    <section id="qui-som" style={{ background: "linear-gradient(180deg, #FBF0EE 0%, #FFF8F7 100%)", padding: "6rem 1.5rem" }}>
+      <div ref={ref} style={{ maxWidth: 1200, margin: "0 auto" }}>
+        <div style={{ textAlign: "center", marginBottom: "3.5rem" }}>
+          <span style={{ fontFamily: "'Nunito', sans-serif", fontSize: 12, fontWeight: 700, color: "#C0392B", letterSpacing: "2px", textTransform: "uppercase" }}>Qui som</span>
+          <h2 style={{ fontFamily: "'Quicksand', sans-serif", fontWeight: 700, fontSize: "clamp(1.8rem, 4vw, 2.6rem)", color: "#3D0A06", marginTop: 8, letterSpacing: "-0.3px" }}>
+            Una família que estima<br />les mascotes tant com tu.
+          </h2>
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 48, alignItems: "center" }}>
+
+          {/* Foto */}
+          <div className={visible ? "fade-up" : ""} style={{ opacity: visible ? undefined : 0, animationDelay: "0.1s", position: "relative" }}>
+            <div style={{ borderRadius: 28, overflow: "hidden", boxShadow: "0 12px 48px rgba(192,57,43,0.18)" }}>
+              <img src={teamImg} alt="Equip de Faunàtics Reus" style={{ width: "100%", height: 420, objectFit: "cover", objectPosition: "center" }} />
+            </div>
+            {/* Badge damunt la foto */}
+            <div style={{
+              position: "absolute", bottom: -18, right: 24,
+              background: "white", borderRadius: 20, padding: "14px 22px",
+              boxShadow: "0 8px 28px rgba(192,57,43,0.18)",
+              border: "1px solid rgba(192,57,43,0.1)",
+              display: "flex", alignItems: "center", gap: 12,
+            }}>
+              <div style={{ width: 44, height: 44, borderRadius: "50%", background: "linear-gradient(135deg, #C0392B, #E74C3C)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <Heart size={20} color="white" fill="white" />
+              </div>
+              <div>
+                <div style={{ fontFamily: "'Quicksand', sans-serif", fontWeight: 700, fontSize: 16, color: "#3D0A06" }}>+8 anys</div>
+                <div style={{ fontFamily: "'Nunito', sans-serif", fontSize: 12, color: "#9a6060" }}>cuidant Reus</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Text */}
+          <div className={visible ? "fade-up" : ""} style={{ opacity: visible ? undefined : 0, animationDelay: "0.25s" }}>
+            <p style={{ fontFamily: "'Nunito', sans-serif", fontSize: 17, color: "#3D0A06", lineHeight: 1.8, marginBottom: 20, fontStyle: "italic", borderLeft: "4px solid #C0392B", paddingLeft: 20 }}>
+              "A Faunàtics Reus no venem productes. Ajudem a les famílies a cuidar els seus animals com es mereixen."
+            </p>
+            <p style={{ fontFamily: "'Nunito', sans-serif", fontSize: 15, color: "#6b3030", lineHeight: 1.75, marginBottom: 20 }}>
+              Sóc l'Anna, i fa més de 8 anys que porto amb il·lusió aquesta botiga al cor de Reus. El que va néixer com una passió per les mascotes s'ha convertit en la nostra manera de vida.
+            </p>
+            <p style={{ fontFamily: "'Nunito', sans-serif", fontSize: 15, color: "#6b3030", lineHeight: 1.75, marginBottom: 32 }}>
+              Ens especialitzem en nutrició animal perquè creiem que una bona alimentació és la base de la salut. Per això seleccionem cada producte amb cura, i dediquem el temps necessari a cada client per trobar el que millor s'adapta a la seva mascota.
+            </p>
+
+            {/* Valors personals */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              {[
+                { icon: <CheckCircle2 size={18} />, text: "Assessorament personalitzat sense pressa" },
+                { icon: <CheckCircle2 size={18} />, text: "Especialistes en nutrició i Hydra Care" },
+                { icon: <CheckCircle2 size={18} />, text: "Negoci local, femení i inclusiu" },
+              ].map(item => (
+                <div key={item.text} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <span style={{ color: "#C0392B", flexShrink: 0 }}>{item.icon}</span>
+                  <span style={{ fontFamily: "'Nunito', sans-serif", fontSize: 15, color: "#3D0A06", fontWeight: 600 }}>{item.text}</span>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ marginTop: 36, display: "flex", gap: 12, flexWrap: "wrap" }}>
+              <a href={WHATSAPP_URL} target="_blank" rel="noreferrer" style={{
+                display: "inline-flex", alignItems: "center", gap: 8, padding: "13px 26px",
+                background: "linear-gradient(135deg, #C0392B, #E74C3C)", color: "white",
+                borderRadius: 50, textDecoration: "none", fontFamily: "'Nunito', sans-serif",
+                fontWeight: 700, fontSize: 15, boxShadow: "0 4px 16px rgba(192,57,43,0.4)",
+              }}>
+                <MessageCircle size={16} /> Parla amb l'Anna
+              </a>
+              <a href={INSTAGRAM} target="_blank" rel="noreferrer" style={{
+                display: "inline-flex", alignItems: "center", gap: 8, padding: "13px 26px",
+                background: "white", color: "#b5367a", borderRadius: 50,
+                textDecoration: "none", fontFamily: "'Nunito', sans-serif",
+                fontWeight: 700, fontSize: 15, border: "2px solid #b5367a",
+              }}>
+                <Instagram size={16} /> @faunatics_
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ── MARQUES ─────────────────────────────────────────────────────
+function Brands() {
+  const { ref, visible } = useInView(0.2);
+
+  const brands = [
+    { name: "Royal Canin", color: "#8B0000" },
+    { name: "Hill's", color: "#C0392B" },
+    { name: "Advance", color: "#A93226" },
+    { name: "Purina", color: "#922B21" },
+    { name: "Hydra Care", color: "#C0392B" },
+    { name: "Eukanuba", color: "#7B241C" },
+    { name: "Brit", color: "#A04000" },
+    { name: "Acana", color: "#922B21" },
+  ];
+
+  return (
+    <section style={{ background: "#FBF0EE", padding: "4rem 1.5rem" }}>
+      <div ref={ref} style={{ maxWidth: 1200, margin: "0 auto" }}>
+        <p className={visible ? "fade-up" : ""} style={{
+          opacity: visible ? undefined : 0,
+          textAlign: "center", fontFamily: "'Nunito', sans-serif",
+          fontSize: 13, fontWeight: 700, color: "#9a6060",
+          letterSpacing: "2px", textTransform: "uppercase", marginBottom: "2rem",
+        }}>
+          Marques de confiança que trobaràs a la botiga
+        </p>
+
+        {/* Carrusel infinit */}
+        <div style={{ overflow: "hidden", position: "relative" }}>
+          <div style={{
+            display: "flex", gap: 16,
+            animation: "scrollBrands 22s linear infinite",
+            width: "max-content",
+          }}>
+            {[...brands, ...brands].map((brand, i) => (
+              <div key={`${brand.name}-${i}`} style={{
+                background: "white", borderRadius: 14, padding: "14px 28px",
+                border: "1px solid rgba(192,57,43,0.1)",
+                boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
+                display: "flex", alignItems: "center", gap: 10,
+                whiteSpace: "nowrap", flexShrink: 0,
+              }}>
+                <div style={{ width: 10, height: 10, borderRadius: "50%", background: brand.color }} />
+                <span style={{ fontFamily: "'Quicksand', sans-serif", fontWeight: 700, fontSize: 15, color: "#3D0A06" }}>
+                  {brand.name}
+                </span>
+              </div>
+            ))}
+          </div>
+          {/* Degradats als extrems */}
+          <div style={{ position: "absolute", left: 0, top: 0, bottom: 0, width: 80, background: "linear-gradient(to right, #FBF0EE, transparent)", pointerEvents: "none" }} />
+          <div style={{ position: "absolute", right: 0, top: 0, bottom: 0, width: 80, background: "linear-gradient(to left, #FBF0EE, transparent)", pointerEvents: "none" }} />
+        </div>
+
+        <p style={{ textAlign: "center", fontFamily: "'Nunito', sans-serif", fontSize: 13, color: "#9a6060", marginTop: "1.5rem", fontStyle: "italic" }}>
+          I moltes més. Pregunta'ns si tens alguna marca en ment.
+        </p>
+      </div>
+      <style>{`@keyframes scrollBrands { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }`}</style>
+    </section>
+  );
+}
+
+// ── GALERIA ─────────────────────────────────────────────────────
+function Gallery() {
+  const { ref, visible } = useInView();
+  const [selected, setSelected] = useState<string | null>(null);
+
+  const photos = [
+    { src: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=800&q=80", alt: "Gossos feliços", span: "col" },
+    { src: "https://images.unsplash.com/photo-1574158622682-e40e69881006?w=800&q=80", alt: "Gat a la botiga", span: "" },
+    { src: "https://images.unsplash.com/photo-1535268244668-91c429be6932?w=800&q=80", alt: "Mascotes", span: "" },
+    { src: "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=800&q=80", alt: "Interior botiga", span: "col" },
+    { src: "https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=800&q=80", alt: "Productes cura", span: "" },
+    { src: "https://images.unsplash.com/photo-1615751072497-5f5169febe17?w=800&q=80", alt: "Joguines mascotes", span: "" },
+  ];
+
+  return (
+    <section style={{ background: "#FFF8F7", padding: "6rem 1.5rem" }}>
+      <div ref={ref} style={{ maxWidth: 1200, margin: "0 auto" }}>
+        <div style={{ textAlign: "center", marginBottom: "3rem" }}>
+          <span style={{ fontFamily: "'Nunito', sans-serif", fontSize: 12, fontWeight: 700, color: "#C0392B", letterSpacing: "2px", textTransform: "uppercase" }}>La nostra botiga</span>
+          <h2 style={{ fontFamily: "'Quicksand', sans-serif", fontWeight: 700, fontSize: "clamp(1.8rem, 4vw, 2.6rem)", color: "#3D0A06", marginTop: 8, letterSpacing: "-0.3px" }}>
+            Vine a conèixer-nos.
+          </h2>
+          <p style={{ fontFamily: "'Nunito', sans-serif", color: "#6b3030", fontSize: 15, maxWidth: 440, margin: "8px auto 0", lineHeight: 1.6 }}>
+            Un espai càlid i acollidor on les mascotes i les seves famílies sempre són benvingudes.
+          </p>
+        </div>
+
+        {/* Grid de fotos */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gridTemplateRows: "auto auto", gap: 12 }}>
+          {photos.map((photo, i) => (
+            <div key={photo.src} className={visible ? "fade-up" : ""} style={{
+              animationDelay: `${i * 0.08}s`, opacity: visible ? undefined : 0,
+              gridColumn: photo.span === "col" ? "span 1" : "span 1",
+              borderRadius: 16, overflow: "hidden",
+              boxShadow: "0 4px 18px rgba(0,0,0,0.1)",
+              cursor: "pointer", position: "relative",
+              height: i === 0 || i === 3 ? 320 : 200,
+              transition: "transform 0.3s, box-shadow 0.3s",
+            }}
+              onClick={() => setSelected(photo.src)}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = "scale(1.02)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 8px 32px rgba(192,57,43,0.2)"; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = "scale(1)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 4px 18px rgba(0,0,0,0.1)"; }}>
+              <img src={photo.src} alt={photo.alt} style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.5s" }} />
+              <div style={{ position: "absolute", inset: 0, background: "rgba(192,57,43,0)", transition: "background 0.3s" }}
+                onMouseEnter={e => (e.currentTarget.style.background = "rgba(192,57,43,0.12)")}
+                onMouseLeave={e => (e.currentTarget.style.background = "rgba(192,57,43,0)")} />
+            </div>
+          ))}
+        </div>
+
+        <p style={{ textAlign: "center", fontFamily: "'Nunito', sans-serif", fontSize: 14, color: "#9a6060", marginTop: "2rem", fontStyle: "italic" }}>
+          📸 Fotos reals de la botiga pròximament · Carrer d'Ignasi Iglésias, 145 · Reus
+        </p>
+      </div>
+
+      {/* Lightbox */}
+      {selected && (
+        <div onClick={() => setSelected(null)} style={{
+          position: "fixed", inset: 0, zIndex: 1000,
+          background: "rgba(0,0,0,0.88)", backdropFilter: "blur(8px)",
+          display: "flex", alignItems: "center", justifyContent: "center", padding: "2rem",
+          cursor: "zoom-out",
+        }}>
+          <img src={selected} alt="Foto ampliada" style={{ maxWidth: "90vw", maxHeight: "85vh", borderRadius: 16, boxShadow: "0 20px 60px rgba(0,0,0,0.5)" }} />
+          <button onClick={() => setSelected(null)} style={{
+            position: "absolute", top: 20, right: 24,
+            background: "rgba(255,255,255,0.15)", border: "none", borderRadius: "50%",
+            width: 44, height: 44, cursor: "pointer", color: "white",
+            display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            <X size={22} />
+          </button>
+        </div>
+      )}
+    </section>
+  );
+}
+
 // ── FOOTER ──────────────────────────────────────────────────────
 function Footer() {
   return (
